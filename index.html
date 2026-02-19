@@ -3,604 +3,414 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rendimiento - Libertadores de San Cristóbal</title>
+    <title>Rendimiento Libertadores - 1ra AFA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        club: {
-                            dark: '#0f172a',
-                            panel: '#1e293b',
-                            primary: '#3b82f6',
-                            accent: '#10b981'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; }
-        .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
-        .metric-card { background: #1e293b; border-radius: 0.75rem; padding: 1.25rem; border: 1px solid #334155; }
-        .traffic-red { color: #ef4444; }
-        .traffic-yellow { color: #eab308; }
-        .traffic-green { color: #22c55e; }
-        .bg-traffic-red { background-color: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; }
-        .bg-traffic-yellow { background-color: rgba(234, 179, 8, 0.2); border: 1px solid #eab308; }
-        .bg-traffic-green { background-color: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; }
-        canvas { max-height: 350px; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; color: #f8fafc; }
+        .glass-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 1rem; }
+        .tab-active { background-color: #3b82f6; color: white; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
+        .traffic-green { border-left: 5px solid #22c55e; }
+        .traffic-yellow { border-left: 5px solid #eab308; }
+        .traffic-red { border-left: 5px solid #ef4444; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        canvas { max-height: 400px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen pb-12">
 
-    <!-- Navbar -->
-    <header class="bg-club-panel border-b border-slate-700 p-4 sticky top-0 z-50">
+    <!-- Header -->
+    <header class="bg-slate-900/80 border-b border-slate-700 p-4 sticky top-0 z-50 backdrop-blur-md">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-                <div class="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center overflow-hidden border-2 border-slate-600 text-xs text-center leading-tight">
-                    [Escudo Libertadores]
-                </div>
+            <div class="flex items-center gap-4">
+                <img src="EscudoLiber.png" alt="Escudo Libertadores" class="w-16 h-16 object-contain bg-white rounded-xl p-1 shadow-2xl">
                 <div>
-                    <h1 class="text-xl font-bold tracking-tight uppercase">Libertadores de San Cristóbal</h1>
-                    <p class="text-xs text-slate-400">Departamento de Preparación Física - 1ra AFA</p>
+                    <h1 class="text-2xl font-black tracking-tighter uppercase leading-none">Libertadores <span class="text-blue-500 text-sm block">SAN CRISTÓBAL • FUTSAL</span></h1>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Ciencia Aplicada al Deporte • Temporada 2026</p>
                 </div>
             </div>
-            <nav class="flex gap-2 bg-slate-800 p-1 rounded-lg">
-                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="px-4 py-2 rounded-md text-sm font-medium bg-slate-700 text-white transition-colors">Resumen Equipo</button>
-                <button onclick="switchTab('individual')" id="btn-individual" class="px-4 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-white transition-colors">Perfil Individual</button>
-                <button onclick="switchTab('compare')" id="btn-compare" class="px-4 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-white transition-colors">Comparativa</button>
+            <nav class="flex p-1 bg-slate-800 rounded-lg border border-slate-700">
+                <button onclick="changeTab('general')" id="tab-general" class="px-5 py-2 rounded-md text-xs font-bold transition-all tab-active">GENERAL</button>
+                <button onclick="changeTab('individual')" id="tab-individual" class="px-5 py-2 rounded-md text-xs font-bold transition-all text-slate-400 hover:text-white">INDIVIDUAL</button>
+                <button onclick="changeTab('compare')" id="tab-compare" class="px-5 py-2 rounded-md text-xs font-bold transition-all text-slate-400 hover:text-white">COMPARATIVA</button>
             </nav>
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="flex-grow p-4 md:p-6 max-w-7xl mx-auto w-full">
-        
-        <!-- View: Dashboard -->
-        <div id="view-dashboard" class="space-y-6">
-            <h2 class="text-2xl font-bold border-b border-slate-700 pb-2">Estado General del Plantel</h2>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="metric-card">
-                    <h3 class="text-sm font-semibold text-slate-400 mb-4">Distribución de Puestos</h3>
-                    <canvas id="chart-positions"></canvas>
+    <main class="max-w-7xl mx-auto px-4 mt-8">
+
+        <!-- VIEW: GENERAL -->
+        <section id="view-general" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="glass-card p-6 text-center">
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase">Media Masa Muscular</h4>
+                    <p class="text-3xl font-black text-blue-400" id="avg-musc">--</p>
+                    <span class="text-[9px] text-slate-500">Ref: >45% Óptimo</span>
                 </div>
-                <div class="metric-card md:col-span-2">
-                    <h3 class="text-sm font-semibold text-slate-400 mb-4">Evolución Yo-Yo Test (Promedios 2025 vs 2026)</h3>
-                    <canvas id="chart-yoyo-team"></canvas>
+                <div class="glass-card p-6 text-center">
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase">Media Masa Adiposa</h4>
+                    <p class="text-3xl font-black text-emerald-400" id="avg-adip">--</p>
+                    <span class="text-[9px] text-slate-500">Ref: <15% Óptimo</span>
                 </div>
-            </div>
-            <div class="metric-card">
-                <h3 class="text-sm font-semibold text-slate-400 mb-4">Alertas Críticas del Equipo (Asimetrías > 10% y Adiposidad Alta)</h3>
-                <div id="team-alerts" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    <!-- Dinámico -->
+                <div class="glass-card p-6 text-center">
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase">Yo-Yo Test Media</h4>
+                    <p class="text-3xl font-black text-white" id="avg-yoyo">--</p>
+                    <span class="text-[9px] text-slate-500">Temporada 2026</span>
                 </div>
-            </div>
-        </div>
-
-        <!-- View: Individual -->
-        <div id="view-individual" class="space-y-6 hidden">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700 pb-4 gap-4">
-                <h2 class="text-2xl font-bold">Análisis Individual</h2>
-                <select id="player-select" class="bg-slate-800 border border-slate-600 text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 w-full md:w-64" onchange="renderIndividualView()">
-                    <!-- Options generadas por JS -->
-                </select>
-            </div>
-
-            <div id="individual-content" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Columna Izquierda: Perfil y Antropometría -->
-                <div class="space-y-6">
-                    <div class="metric-card flex items-center gap-4">
-                        <div class="w-20 h-20 bg-slate-700 rounded-full flex items-center justify-center text-2xl font-bold text-slate-400">
-                            <span id="player-initials">--</span>
-                        </div>
-                        <div>
-                            <h3 id="player-name" class="text-xl font-bold">Nombre Jugador</h3>
-                            <p id="player-position" class="text-sm text-slate-400 uppercase tracking-wide">Puesto | Pierna</p>
-                        </div>
-                    </div>
-
-                    <div class="metric-card">
-                        <h3 class="text-sm font-semibold text-slate-400 mb-4">Composición Corporal (Impedancia)</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-4 text-center">
-                            <div class="p-3 bg-slate-800 rounded-lg">
-                                <div class="text-xs text-slate-400">Peso</div>
-                                <div id="ind-peso" class="text-lg font-bold">- kg</div>
-                            </div>
-                            <div class="p-3 bg-slate-800 rounded-lg">
-                                <div class="text-xs text-slate-400">Talla</div>
-                                <div id="ind-talla" class="text-lg font-bold">- m</div>
-                            </div>
-                            <div id="card-adip" class="p-3 rounded-lg bg-traffic-green">
-                                <div class="text-xs opacity-80">Adiposidad</div>
-                                <div id="ind-adip" class="text-lg font-bold">- %</div>
-                            </div>
-                            <div id="card-musc" class="p-3 rounded-lg bg-traffic-green">
-                                <div class="text-xs opacity-80">Masa Muscular</div>
-                                <div id="ind-musc" class="text-lg font-bold">- %</div>
-                            </div>
-                        </div>
-                        <canvas id="chart-radar-ind"></canvas>
-                    </div>
-                </div>
-
-                <!-- Columna Central: Rendimiento y Potencia -->
-                <div class="space-y-6">
-                    <div class="metric-card">
-                        <h3 class="text-sm font-semibold text-slate-400 mb-4">Capacidad Aeróbica (Yo-Yo Test)</h3>
-                        <div class="flex items-end gap-4">
-                            <div class="flex-1">
-                                <canvas id="chart-yoyo-ind"></canvas>
-                            </div>
-                            <div id="yoyo-indicator" class="w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl mb-6">
-                                -
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="metric-card">
-                        <h3 class="text-sm font-semibold text-slate-400 mb-4">Potencia y Asimetría (CMJ / Broad Jump)</h3>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
-                            <div class="p-3 bg-slate-800 rounded-lg text-center">
-                                <div class="text-xs text-slate-400">CMJ Bipodal</div>
-                                <div id="ind-cmj" class="text-xl font-bold">- cm</div>
-                            </div>
-                            <div id="card-asym" class="p-3 rounded-lg text-center">
-                                <div class="text-xs opacity-80">Asimetría CMJ</div>
-                                <div id="ind-asym" class="text-xl font-bold">- %</div>
-                            </div>
-                        </div>
-                        <canvas id="chart-power-ind"></canvas>
-                    </div>
-                </div>
-
-                <!-- Columna Derecha: Kinesiología y Recomendaciones -->
-                <div class="space-y-6">
-                    <div class="metric-card">
-                        <h3 class="text-sm font-semibold text-slate-400 mb-4">Evaluación Kinésica</h3>
-                        <ul class="space-y-3 text-sm">
-                            <li class="flex flex-col bg-slate-800 p-3 rounded-md border-l-4 border-blue-500">
-                                <span class="text-xs text-slate-400 uppercase">Tobillos</span>
-                                <span id="kin-tobillos" class="font-medium">-</span>
-                            </li>
-                            <li class="flex flex-col bg-slate-800 p-3 rounded-md border-l-4 border-indigo-500">
-                                <span class="text-xs text-slate-400 uppercase">Cadera (Jurdan)</span>
-                                <span id="kin-cadera" class="font-medium">-</span>
-                            </li>
-                            <li class="flex flex-col bg-slate-800 p-3 rounded-md border-l-4 border-purple-500">
-                                <span class="text-xs text-slate-400 uppercase">Estabilidad Unipodal</span>
-                                <span id="kin-unipodal" class="font-medium">-</span>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div class="metric-card border border-red-900 bg-red-900/10">
-                        <h3 class="text-sm font-semibold text-red-400 mb-3 uppercase tracking-wide">Alertas & Plan de Acción</h3>
-                        <div id="ind-alerts" class="space-y-3 text-sm">
-                            <!-- Inyectado por JS -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- View: Compare -->
-        <div id="view-compare" class="space-y-6 hidden">
-            <h2 class="text-2xl font-bold border-b border-slate-700 pb-2">Comparativa de Jugadores</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">Jugador A</label>
-                    <select id="compare-select-1" class="bg-slate-800 border border-slate-600 text-white text-sm rounded-lg focus:ring-blue-500 block w-full p-2.5" onchange="renderCompareView()"></select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-400 mb-2">Jugador B</label>
-                    <select id="compare-select-2" class="bg-slate-800 border border-slate-600 text-white text-sm rounded-lg focus:ring-blue-500 block w-full p-2.5" onchange="renderCompareView()"></select>
+                <div class="glass-card p-6 text-center">
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase">Alertas Activas</h4>
+                    <p class="text-3xl font-black text-red-500" id="active-alerts">--</p>
+                    <span class="text-[9px] text-slate-500">Riesgo Mecánico/Salud</span>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="metric-card">
-                    <h3 class="text-sm font-semibold text-slate-400 mb-4">Composición Corporal vs Promedio</h3>
-                    <canvas id="chart-compare-radar"></canvas>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card p-6">
+                    <h3 class="text-sm font-black uppercase mb-6 border-b border-slate-700 pb-2">Distribución por Puestos</h3>
+                    <canvas id="chart-team-positions"></canvas>
                 </div>
-                <div class="metric-card">
-                    <h3 class="text-sm font-semibold text-slate-400 mb-4">Potencia (CMJ & Broad)</h3>
-                    <canvas id="chart-compare-bar"></canvas>
+                <div class="glass-card p-6">
+                    <h3 class="text-sm font-black uppercase mb-6 border-b border-slate-700 pb-2">Mejoras Yo-Yo (2025 vs 2026)</h3>
+                    <canvas id="chart-team-yoyo"></canvas>
                 </div>
             </div>
             
-            <div class="metric-card overflow-x-auto">
-                <table class="w-full text-sm text-left text-slate-300">
-                    <thead class="text-xs text-slate-400 uppercase bg-slate-800">
-                        <tr>
-                            <th scope="col" class="px-6 py-3">Métrica</th>
-                            <th scope="col" class="px-6 py-3" id="comp-name-1">Jugador A</th>
-                            <th scope="col" class="px-6 py-3" id="comp-name-2">Jugador B</th>
-                            <th scope="col" class="px-6 py-3">Diferencia</th>
-                        </tr>
-                    </thead>
-                    <tbody id="compare-table-body">
-                        <!-- Inyectado por JS -->
-                    </tbody>
-                </table>
+            <div class="glass-card p-6 overflow-hidden">
+                <h3 class="text-sm font-black uppercase mb-6 border-b border-slate-700 pb-2">Parámetros de Referencia</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="p-4 rounded-lg bg-green-500/10 border border-green-500/20">
+                        <p class="text-green-500 font-bold text-xs uppercase">Rango Fisiológico</p>
+                        <p class="text-[10px] text-slate-400 mt-1">Grasa <14% | Músculo >45%</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                        <p class="text-yellow-500 font-bold text-xs uppercase">Rango Potencia</p>
+                        <p class="text-[10px] text-slate-400 mt-1">CMJ >40cm | Asimetría <10%</p>
+                    </div>
+                    <div class="p-4 rounded-lg bg-red-500/10 border border-red-500/20">
+                        <p class="text-red-500 font-bold text-xs uppercase">Rango Alerta</p>
+                        <p class="text-[10px] text-slate-400 mt-1">Asimetría >15% (Riesgo)</p>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- VIEW: INDIVIDUAL -->
+        <section id="view-individual" class="hidden space-y-8">
+            <div class="flex flex-col md:flex-row gap-6 items-start">
+                <div class="w-full md:w-80 glass-card p-6 sticky top-24">
+                    <label class="text-[10px] font-black text-slate-500 uppercase block mb-2">Seleccionar Jugador</label>
+                    <select id="player-select" onchange="renderIndividual()" class="w-full bg-slate-800 border border-slate-700 rounded-lg p-3 text-sm font-bold focus:ring-2 focus:ring-blue-500 transition-all mb-6"></select>
+                    
+                    <div id="ind-profile-card" class="text-center">
+                        <div class="w-24 h-24 bg-slate-700 rounded-full mx-auto mb-4 border-4 border-blue-500 flex items-center justify-center text-3xl font-black text-slate-400" id="ind-avatar">--</div>
+                        <h2 class="text-xl font-black uppercase tracking-tighter" id="ind-name">--</h2>
+                        <div id="ind-pos-pill" class="inline-block px-3 py-1 bg-blue-500 rounded-full text-[10px] font-black mt-2">--</div>
+                        <div class="grid grid-cols-2 gap-2 mt-6">
+                            <div class="bg-slate-800 p-2 rounded border border-slate-700">
+                                <span class="text-[9px] text-slate-500 uppercase block">Peso</span>
+                                <span class="font-bold text-sm" id="ind-weight">--</span>
+                            </div>
+                            <div class="bg-slate-800 p-2 rounded border border-slate-700">
+                                <span class="text-[9px] text-slate-500 uppercase block">Talla</span>
+                                <span class="font-bold text-sm" id="ind-height">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-grow space-y-8">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="glass-card p-6">
+                            <h3 class="text-xs font-black uppercase mb-6 border-b border-slate-700 pb-2">Métricas Fisiológicas</h3>
+                            <canvas id="chart-ind-radar"></canvas>
+                        </div>
+                        <div class="glass-card p-6">
+                            <h3 class="text-xs font-black uppercase mb-6 border-b border-slate-700 pb-2">Test Yo-Yo Evolutivo</h3>
+                            <canvas id="chart-ind-yoyo"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="glass-card p-6 flex flex-col">
+                            <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-700 pb-2">Balance de Potencia</h3>
+                            <div class="flex-grow flex items-center justify-center p-4">
+                                <div id="ind-asym-circle" class="w-32 h-32 rounded-full border-8 flex flex-col items-center justify-center shadow-2xl">
+                                    <span class="text-[9px] font-black uppercase">Asim CMJ</span>
+                                    <span class="text-2xl font-black" id="ind-asym-val">0%</span>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mt-4 text-center">
+                                <div class="p-3 bg-slate-800 rounded">
+                                    <span class="text-[9px] text-slate-500 uppercase block">CMJ Bipodal</span>
+                                    <span class="font-bold text-lg text-blue-400" id="ind-cmj">--</span>
+                                </div>
+                                <div class="p-3 bg-slate-800 rounded">
+                                    <span class="text-[9px] text-slate-500 uppercase block">Broad Jump</span>
+                                    <span class="font-bold text-lg text-emerald-400" id="ind-broad">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-card p-6">
+                            <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-700 pb-2">Diagnóstico Kinesiológico</h3>
+                            <div class="space-y-4">
+                                <div class="p-3 bg-slate-800/50 rounded border-l-4 border-blue-500">
+                                    <span class="text-[9px] font-bold uppercase text-slate-400 block">Tobillos</span>
+                                    <span class="text-xs" id="kin-tob">--</span>
+                                </div>
+                                <div class="p-3 bg-slate-800/50 rounded border-l-4 border-indigo-500">
+                                    <span class="text-[9px] font-bold uppercase text-slate-400 block">Jurdan (Cadera)</span>
+                                    <span class="text-xs" id="kin-cad">--</span>
+                                </div>
+                                <div class="p-3 bg-slate-800/50 rounded border-l-4 border-purple-500">
+                                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Estabilidad Unipodal</span>
+                                    <span class="text-xs" id="kin-uni">--</span>
+                                </div>
+                                <div class="p-3 bg-slate-800/50 rounded border-l-4 border-pink-500">
+                                    <span class="text-[10px] font-bold uppercase text-slate-400 block">Sentadilla</span>
+                                    <span class="text-xs" id="kin-sen">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card p-6 bg-blue-500/5 border-blue-500/20">
+                        <h3 class="text-xs font-black uppercase mb-4 flex items-center gap-2">Recomendaciones del Departamento de Preparación Física</h3>
+                        <div id="ind-recommendation" class="text-sm leading-relaxed text-slate-300 italic"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: COMPARE -->
+        <section id="view-compare" class="hidden space-y-8">
+            <div class="grid grid-cols-2 gap-4">
+                <select id="comp-1" onchange="renderCompare()" class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm font-bold"></select>
+                <select id="comp-2" onchange="renderCompare()" class="bg-slate-800 border border-slate-700 rounded-xl p-4 text-sm font-bold"></select>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="glass-card p-6 text-center">
+                    <h3 class="text-sm font-black uppercase mb-6">Radar Comparativo</h3>
+                    <canvas id="chart-compare-radar"></canvas>
+                </div>
+                <div class="glass-card p-6">
+                    <h3 class="text-sm font-black uppercase mb-6">Potencia Relativa</h3>
+                    <canvas id="chart-compare-bars"></canvas>
+                </div>
+            </div>
+        </section>
 
     </main>
 
     <script>
-        // Data estructurada desde el CSV proporcionado
+        // BASE DE DATOS REESTRUCTURADA - 23 JUGADORES (Cruce CSV + XLSX Feb 2026)
         const playersData = [
-            {
-                id: 1, name: "Alberto, Joaquin", position: "Cierre", leg: "Derecho", 
-                weight: 68.3, height: 1.77, 
-                impedance: { musc: 45.2, adip: 11.8, visc: 4, imc: 21.8, edMet: 21 },
-                yoyo: { y2025: 20.0, y2026: 20.8, dif: 0.8 },
-                power: { cmj: 44.1, abK: 59.3, cmj_de: 25.5, cmj_iz: 24.6, asym_cmj: -3.53, broad: 2.58, broad_de: 2.13, broad_iz: 2.2, asym_broad: 3.28 },
-                kin: { tobillos: "Movilidad optima", cadera: "Rom optimo c/carga isquio", unipodal: "poca estabilidad", sentadilla: "Buena profundidad y movilidad", recomendaciones: "reducir tension isquiosural, trabajar estabilidad pelvica/cadera" }
-            },
-            {
-                id: 2, name: "Arzani, Ramiro", position: "Arquero", leg: "Izquierda", 
-                weight: 78.5, height: 1.83, 
-                impedance: { musc: 44.0, adip: 14.5, visc: 6, imc: 23.4, edMet: 25 },
-                yoyo: { y2025: 18.3, y2026: 18.1, dif: -0.2 },
-                power: { cmj: 45.3, abK: 52.8, cmj_de: 28.2, cmj_iz: 24.6, asym_cmj: -12.77, broad: 2.46, broad_de: 2.35, broad_iz: 2.1, asym_broad: -10.64 },
-                kin: { tobillos: "Movilidad reducida ambos tobillos", cadera: "Rom optimo c/carga isquio", unipodal: "buena movilidad y estabilidad", sentadilla: "Levanta Talones", recomendaciones: "" }
-            },
-            {
-                id: 3, name: "Benitez, Marcos", position: "Ala", leg: "Derecho", 
-                weight: 71.2, height: 1.75, 
-                impedance: { musc: 48.1, adip: 9.8, visc: 3, imc: 23.2, edMet: 20 },
-                yoyo: { y2025: 20.5, y2026: 21.1, dif: 0.6 },
-                power: { cmj: 44.1, abK: 46.5, cmj_de: 22.0, cmj_iz: 23.8, asym_cmj: 8.18, broad: 2.25, broad_de: 2.04, broad_iz: 2.1, asym_broad: 2.94 },
-                kin: { tobillos: "Movilidad reducida ambos tobillos", cadera: "Rom optimo +90", unipodal: "rodilla en varo, poca/nula movilidad pelvis", sentadilla: "Poca movilidad", recomendaciones: "mejorar movilidad tobillo, mejorar movilidad escapular" }
-            },
-            {
-                id: 4, name: "Figueroa, Frank", position: "Pivot", leg: "Derecho", 
-                weight: 82.1, height: 1.88, 
-                impedance: { musc: 46.5, adip: 13.2, visc: 5, imc: 24.5, edMet: 26 },
-                yoyo: { y2025: 19.0, y2026: 18.5, dif: -0.5 },
-                power: { cmj: 48.5, abK: 60.1, cmj_de: 28.0, cmj_iz: 23.5, asym_cmj: 16.07, broad: 2.65, broad_de: 2.40, broad_iz: 2.10, asym_broad: 12.5 },
-                kin: { tobillos: "Movilidad optima", cadera: "Acortamiento psoas", unipodal: "inestabilidad lateral", sentadilla: "Retroversion pelvica", recomendaciones: "Estiramiento flexores cadera, fuerza gluteo medio" }
-            },
-            {
-                id: 5, name: "Cabrera, Agustín", position: "Ala", leg: "Izquierda", 
-                weight: 66.6, height: 1.69, 
-                impedance: { musc: 45.8, adip: 10.5, visc: 3, imc: 23.3, edMet: 22 },
-                yoyo: { y2025: 21.0, y2026: 21.8, dif: 0.8 },
-                power: { cmj: 41.2, abK: 45.0, cmj_de: 21.0, cmj_iz: 20.5, asym_cmj: 2.38, broad: 2.30, broad_de: 2.15, broad_iz: 2.10, asym_broad: 2.32 },
-                kin: { tobillos: "Optima", cadera: "Optima", unipodal: "Estable", sentadilla: "Profunda, tecnica correcta", recomendaciones: "" }
-            }
+            { id: 1, name: "Alberto, Joaquin", pos: "Cierre", leg: "D", weight: 68.3, height: 1.77, musc: 45.2, adip: 11.8, visc: 4, y25: 20.0, y26: 20.8, dif: 0.8, cmj: 44.1, broad: 2.58, asym_cmj: -3.52, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "Buena profundidad y movilidad" } },
+            { id: 2, name: "Arzani, Ramiro", pos: "Arquero", leg: "I", weight: 75.8, height: 1.77, musc: 41.8, adip: 17.3, visc: 6, y25: 18.0, y26: 18.1, dif: 0.1, cmj: 45.3, broad: 2.46, asym_cmj: -12.77, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "mejorar movilidad tobillo" } },
+            { id: 3, name: "Benitez, Marcos", pos: "Ala", leg: "D", weight: 60.8, height: 1.60, musc: 41.5, adip: 19.7, visc: 7, y25: 18.4, y26: 21.3, dif: 2.9, cmj: 44.1, broad: 2.25, asym_cmj: 8.18, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "" } },
+            { id: 4, name: "Cabrera, Agustín", pos: "Arquero", leg: "D", weight: 72.4, height: 1.74, musc: 43.8, adip: 14.8, visc: 5, y25: 18.0, y26: 0, dif: -18, cmj: 36.3, broad: 2.34, asym_cmj: 16.84, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "Buena profundidad y movilidad" } },
+            { id: 5, name: "Del Palacio, Maximiliano", pos: "Ala", leg: "D", weight: 80.4, height: 1.72, musc: 34.3, adip: 29.1, visc: 10, y25: 18.5, y26: 18.5, dif: 0, cmj: 0, broad: 0, asym_cmj: 0, kin: { t: "", c: "", u: "", s: "" } },
+            { id: 6, name: "Figueroa, Frank", pos: "Arquero", leg: "D", weight: 87.3, height: 1.70, musc: 34.3, adip: 31.0, visc: 11, y25: 18.1, y26: 16.2, dif: -1.9, cmj: 36.3, broad: 2.10, asym_cmj: -7.84, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad tobillo/cadera" } },
+            { id: 7, name: "Fiocchi, Walter", pos: "Ala", leg: "I", weight: 89.3, height: 1.74, musc: 37.3, adip: 24.7, visc: 10, y25: 18.4, y26: 18.4, dif: 0, cmj: 37.4, broad: 2.25, asym_cmj: 0, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad tobillo/cadera" } },
+            { id: 8, name: "Gardiol, Agustín", pos: "Ala", leg: "D", weight: 68.5, height: 1.75, musc: 40.9, adip: 17.9, visc: 5, y25: 20.3, y26: 20.3, dif: 0, cmj: 34.2, broad: 2.50, asym_cmj: -18.18, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "mejorar movilidad escapular" } },
+            { id: 9, name: "Gonzi, Nicolás", pos: "Cierre", leg: "D", weight: 71.5, height: 1.74, musc: 41.4, adip: 17.6, visc: 6, y25: 19.1, y26: 19.1, dif: 0, cmj: 39.6, broad: 2.34, asym_cmj: 3.36, kin: { t: "mejorar movilidad", c: "reducir tension + movilidad", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 10, name: "Gregorio, Lautaro", pos: "Pivot", leg: "I", weight: 78.1, height: 1.84, musc: 43.0, adip: 13.4, visc: 4, y25: 18.0, y26: 18.5, dif: 0.5, cmj: 41.8, broad: 2.20, asym_cmj: -7.27, kin: { t: "Movilidad optima", c: "reducir tension + movilidad", u: "buena estabilidad", s: "tobillo/escapular" } },
+            { id: 11, name: "Gutiérrez, Yonathan", pos: "Ala", leg: "D", weight: 75.4, height: 1.79, musc: 38.4, adip: 21.8, visc: 6, y25: 18.1, y26: 18.1, dif: 0, cmj: 52.8, broad: 2.51, asym_cmj: 20.6, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad", s: "mejorar movilidad escapular" } },
+            { id: 12, name: "Ledesma, Facundo", pos: "Ala", leg: "I", weight: 70.7, height: 1.74, musc: 38.9, adip: 22.3, visc: 6, y25: 20.0, y26: 19.5, dif: -0.5, cmj: 34.2, broad: 2.10, asym_cmj: -15.31, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 13, name: "Migliorisi, Diego", pos: "Ala", leg: "I", weight: 72.1, height: 1.76, musc: 41.0, adip: 15.2, visc: 4, y25: 17.4, y26: 0, dif: -17.4, cmj: 30.1, broad: 1.93, asym_cmj: 5.03, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 14, name: "Quiroga, Gonzalo", pos: "Cierre", leg: "D", weight: 0, height: 0, musc: 0, adip: 0, visc: 0, y25: 0, y26: 0, dif: 0, cmj: 0, broad: 0, asym_cmj: 0, kin: { t: "", c: "", u: "", s: "" } },
+            { id: 15, name: "Reche, Agustín", pos: "Ala", leg: "I", weight: 71.2, height: 1.71, musc: 40.5, adip: 19.6, visc: 7, y25: 19.6, y26: 19.6, dif: 0, cmj: 0, broad: 0, asym_cmj: 0, kin: { t: "", c: "", u: "", s: "" } },
+            { id: 16, name: "Rumak, Brian", pos: "Cierre", leg: "D", weight: 78.9, height: 1.80, musc: 40.3, adip: 18.6, visc: 6, y25: 20.0, y26: 20, dif: 0, cmj: 39.6, broad: 2.30, asym_cmj: -11.67, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 17, name: "Silva, Thiago", pos: "Cierre", leg: "D", weight: 85.7, height: 1.78, musc: 36.4, adip: 26.9, visc: 8, y25: 18.2, y26: 18.8, dif: 0.6, cmj: 32.1, broad: 2.13, asym_cmj: -23.70, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 18, name: "Smokvina, Ignacio", pos: "Ala", leg: "I", weight: 69.8, height: 1.73, musc: 41.1, adip: 19.4, visc: 5, y25: 19.4, y26: 19.4, dif: 0, cmj: 34.2, broad: 2.09, asym_cmj: -15.43, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "tobillo/escapular/cadera" } },
+            { id: 19, name: "Benquet, Jonathan", pos: "Pivot", leg: "D", weight: 74.1, height: 1.73, musc: 40.3, adip: 18.7, visc: 7, y25: 19.8, y26: 19.8, dif: 0, cmj: 37.4, broad: 2.15, asym_cmj: -22.06, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 20, name: "Almirón, Agustín", pos: "Cierre", leg: "D", weight: 71.4, height: 1.77, musc: 45.0, adip: 12.9, visc: 4, y25: 17.8, y26: 18.7, dif: 0.9, cmj: 45.3, broad: 2.40, asym_cmj: 8.02, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 21, name: "Perviu, Thiago", pos: "Ala", leg: "D", weight: 63.5, height: 1.74, musc: 47.4, adip: 9.3, visc: 3, y25: 17.2, y26: 17.3, dif: 0.1, cmj: 42.9, broad: 2.36, asym_cmj: -6.67, kin: { t: "Movilidad optima", c: "Rom optimo +90", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 22, name: "Stanizzi, Bautista", pos: "Ala", leg: "I", weight: 65.1, height: 1.70, musc: 42.5, adip: 17.8, visc: 5, y25: 20.0, y26: 20, dif: 0, cmj: 34.2, broad: 2.10, asym_cmj: -7.84, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad", s: "movilidad cadera/pelvis" } },
+            { id: 23, name: "Mack, Ramiro", pos: "Pivot", leg: "I", weight: 92.2, height: 1.85, musc: 39.6, adip: 20.7, visc: 7, y25: 18.1, y26: 18.1, dif: 0, cmj: 33.2, broad: 2.33, asym_cmj: -28.74, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad", s: "tobillo/escapular" } }
         ];
 
-        // Reglas de negocio (Semáforos)
-        const rules = {
-            adipose: { green: 11, yellow: 13 }, // Menor a 11 verde, 11-13 amarillo, >13 rojo
-            muscle: { green: 46, yellow: 44 },  // Mayor a 46 verde, 44-46 amarillo, <44 rojo
-            asymmetry: { green: 8, yellow: 12 } // Menor a 8% verde, 8-12% amarillo, >12% rojo
-        };
+        let currentCharts = {};
 
-        // Estado Global para Gráficos (evitar overlaps)
-        let chartInstances = {};
-
-        function init() {
-            populateSelects();
-            renderDashboard();
-        }
-
-        function switchTab(tabId) {
-            document.getElementById('view-dashboard').classList.add('hidden');
-            document.getElementById('view-individual').classList.add('hidden');
-            document.getElementById('view-compare').classList.add('hidden');
-            
-            document.getElementById('btn-dashboard').className = 'px-4 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-white transition-colors';
-            document.getElementById('btn-individual').className = 'px-4 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-white transition-colors';
-            document.getElementById('btn-compare').className = 'px-4 py-2 rounded-md text-sm font-medium text-slate-400 hover:text-white transition-colors';
-            
-            document.getElementById('view-' + tabId).classList.remove('hidden');
-            document.getElementById('btn-' + tabId).className = 'px-4 py-2 rounded-md text-sm font-medium bg-slate-700 text-white transition-colors';
-
-            if(tabId === 'dashboard') renderDashboard();
-            if(tabId === 'individual') renderIndividualView();
-            if(tabId === 'compare') renderCompareView();
-        }
-
-        function populateSelects() {
-            const selects = ['player-select', 'compare-select-1', 'compare-select-2'];
-            selects.forEach(id => {
-                const el = document.getElementById(id);
-                el.innerHTML = '';
-                playersData.forEach((p, index) => {
-                    const opt = document.createElement('option');
-                    opt.value = p.id;
-                    opt.text = p.name;
-                    if(id === 'compare-select-2' && index === 1) opt.selected = true;
-                    el.appendChild(opt);
-                });
+        function changeTab(view) {
+            ['general', 'individual', 'compare'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                document.getElementById(`tab-${v}`).classList.remove('tab-active');
+                document.getElementById(`tab-${v}`).classList.add('text-slate-400');
             });
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            document.getElementById(`tab-${view}`).classList.add('tab-active');
+            document.getElementById(`tab-${view}`).classList.remove('text-slate-400');
+
+            if(view === 'general') renderGeneral();
+            if(view === 'individual') renderIndividual();
+            if(view === 'compare') renderCompare();
         }
 
-        function getTrafficColor(val, type, returnClass = false) {
-            let color = '';
-            let bgClass = '';
-            val = Math.abs(val);
-
-            if (type === 'adipose') {
-                if (val <= rules.adipose.green) { color = '#22c55e'; bgClass = 'bg-traffic-green'; }
-                else if (val <= rules.adipose.yellow) { color = '#eab308'; bgClass = 'bg-traffic-yellow'; }
-                else { color = '#ef4444'; bgClass = 'bg-traffic-red'; }
-            } else if (type === 'muscle') {
-                if (val >= rules.muscle.green) { color = '#22c55e'; bgClass = 'bg-traffic-green'; }
-                else if (val >= rules.muscle.yellow) { color = '#eab308'; bgClass = 'bg-traffic-yellow'; }
-                else { color = '#ef4444'; bgClass = 'bg-traffic-red'; }
-            } else if (type === 'asymmetry') {
-                if (val <= rules.asymmetry.green) { color = '#22c55e'; bgClass = 'bg-traffic-green'; }
-                else if (val <= rules.asymmetry.yellow) { color = '#eab308'; bgClass = 'bg-traffic-yellow'; }
-                else { color = '#ef4444'; bgClass = 'bg-traffic-red'; }
-            }
-
-            return returnClass ? bgClass : color;
-        }
-
-        function destroyChart(id) {
-            if (chartInstances[id]) {
-                chartInstances[id].destroy();
-            }
-        }
-
-        // --- DASHBOARD ---
-        function renderDashboard() {
-            // Posiciones
-            const posCount = {};
-            playersData.forEach(p => posCount[p.position] = (posCount[p.position] || 0) + 1);
+        function renderGeneral() {
+            const activePlayers = playersData.filter(p => p.weight > 0);
+            const count = activePlayers.length;
             
-            destroyChart('chart-positions');
-            const ctxPos = document.getElementById('chart-positions').getContext('2d');
-            chartInstances['chart-positions'] = new Chart(ctxPos, {
+            const musc = (activePlayers.reduce((acc, p) => acc + p.musc, 0) / count).toFixed(1);
+            const adip = (activePlayers.reduce((acc, p) => acc + p.adip, 0) / count).toFixed(1);
+            const yoyo = (activePlayers.reduce((acc, p) => acc + (p.y26 || p.y25), 0) / count).toFixed(1);
+            
+            // Alertas: Asimetría > 15% o Adiposidad > 20%
+            const alerts = activePlayers.filter(p => p.adip > 20 || Math.abs(p.asym_cmj) > 15).length;
+
+            document.getElementById('avg-musc').innerText = `${musc}%`;
+            document.getElementById('avg-adip').innerText = `${adip}%`;
+            document.getElementById('avg-yoyo').innerText = yoyo;
+            document.getElementById('active-alerts').innerText = alerts;
+
+            const posCounts = {};
+            playersData.forEach(p => posCounts[p.pos] = (posCounts[p.pos] || 0) + 1);
+            
+            if(currentCharts.teamPos) currentCharts.teamPos.destroy();
+            currentCharts.teamPos = new Chart(document.getElementById('chart-team-positions'), {
                 type: 'doughnut',
                 data: {
-                    labels: Object.keys(posCount),
+                    labels: Object.keys(posCounts),
                     datasets: [{
-                        data: Object.values(posCount),
+                        data: Object.values(posCounts),
                         backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'],
-                        borderColor: '#1e293b',
-                        borderWidth: 2
+                        borderWidth: 0
                     }]
                 },
-                options: { responsive: true, plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1' } } } }
+                options: { plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { weight: 'bold' } } } } }
             });
 
-            // YoYo Team
-            const avgYoyo25 = playersData.reduce((acc, p) => acc + p.yoyo.y2025, 0) / playersData.length;
-            const avgYoyo26 = playersData.reduce((acc, p) => acc + p.yoyo.y2026, 0) / playersData.length;
-
-            destroyChart('chart-yoyo-team');
-            const ctxYoyo = document.getElementById('chart-yoyo-team').getContext('2d');
-            chartInstances['chart-yoyo-team'] = new Chart(ctxYoyo, {
+            const topImprovements = [...activePlayers].sort((a,b) => b.dif - a.dif).slice(0, 5);
+            if(currentCharts.teamYoYo) currentCharts.teamYoYo.destroy();
+            currentCharts.teamYoYo = new Chart(document.getElementById('chart-team-yoyo'), {
                 type: 'bar',
                 data: {
-                    labels: ['Promedio Plantel'],
-                    datasets: [
-                        { label: '2025', data: [avgYoyo25], backgroundColor: '#475569' },
-                        { label: '2026', data: [avgYoyo26], backgroundColor: '#3b82f6' }
-                    ]
+                    labels: topImprovements.map(p => p.name.split(',')[0]),
+                    datasets: [{ label: 'Mejora (DIF)', data: topImprovements.map(p => p.dif), backgroundColor: '#3b82f6', borderRadius: 5 }]
                 },
                 options: { 
-                    responsive: true, 
-                    scales: { y: { beginAtZero: false, min: 16, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, x: { ticks: { color: '#94a3b8' }, grid: { display: false } } },
-                    plugins: { legend: { labels: { color: '#cbd5e1' } } }
-                }
-            });
-
-            // Generar Alertas
-            const alertsDiv = document.getElementById('team-alerts');
-            alertsDiv.innerHTML = '';
-            playersData.forEach(p => {
-                if (Math.abs(p.power.asym_cmj) > rules.asymmetry.yellow || p.impedance.adip > rules.adipose.yellow) {
-                    alertsDiv.innerHTML += `
-                        <div class="bg-slate-800 border-l-4 border-red-500 p-3 rounded shadow">
-                            <div class="font-bold text-sm">${p.name}</div>
-                            <div class="text-xs text-slate-400 mt-1">
-                                ${Math.abs(p.power.asym_cmj) > rules.asymmetry.yellow ? `<span class="text-red-400">Asimetría CMJ: ${p.power.asym_cmj}%</span><br>` : ''}
-                                ${p.impedance.adip > rules.adipose.yellow ? `<span class="text-orange-400">Adiposidad: ${p.impedance.adip}%</span>` : ''}
-                            </div>
-                        </div>
-                    `;
+                    scales: { y: { grid: { color: '#334155' }, ticks: { color: '#64748b' } }, x: { ticks: { color: '#64748b' } } },
+                    plugins: { legend: { display: false } }
                 }
             });
         }
 
-        // --- INDIVIDUAL ---
-        function generateActionPlan(player) {
-            let html = '';
-            
-            // Fisiología
-            if (player.impedance.adip > rules.adipose.yellow) html += `<div class="mb-2"><span class="font-bold text-red-500">⚠ Nutrición:</span> Adiposidad elevada (${player.impedance.adip}%). Intervención calórica requerida y control semanal. Incremento de volumen aeróbico (baja intensidad post-entrenamiento).</div>`;
-            if (player.impedance.musc < rules.muscle.yellow) html += `<div class="mb-2"><span class="font-bold text-orange-500">⚠ Fuerza:</span> Masa muscular por debajo de nivel óptimo (${player.impedance.musc}%). Ajustar ingesta proteica. Añadir 2 estímulos semanales de fuerza hipertrofia.</div>`;
-            
-            // Rendimiento
-            if (player.yoyo.dif < 0) html += `<div class="mb-2"><span class="font-bold text-red-500">⚠ Resistencia:</span> Regresión en Yo-Yo Test (${player.yoyo.dif}). Protocolo intermitente de alta intensidad (15x15) suplementario.</div>`;
-            
-            // Biomecánica / Asimetría
-            let asymVal = Math.abs(player.power.asym_cmj);
-            if (asymVal > rules.asymmetry.yellow) {
-                let weakLeg = player.power.asym_cmj > 0 ? "Izquierda" : "Derecha"; // + is right dominance in force, meaning left is weak
-                html += `<div class="mb-2"><span class="font-bold text-red-500">⚠ Asimetría Crítica (${asymVal}%):</span> Riesgo de lesión alto. Déficit en pierna ${weakLeg}. <br><span class="text-slate-300">Prescripción:</span> Trabajo unilateral (sentadilla búlgara, peso muerto a 1 pierna). Foco excéntrico.</div>`;
-            }
+        function renderIndividual() {
+            const select = document.getElementById('player-select');
+            const p = playersData.find(x => x.id == select.value);
 
-            // Kinésico textual mapping
-            const kinStr = (player.kin.tobillos + player.kin.cadera + player.kin.unipodal).toLowerCase();
-            if (kinStr.includes("reducida") || kinStr.includes("poca")) {
-                html += `<div class="mb-2"><span class="font-bold text-orange-500">⚠ Movilidad:</span> Déficit articular detectado. <br><span class="text-slate-300">Prescripción:</span> Protocolo obligatorio WARM UP (Dorsiflexión con banda, obelisco, movilidad 90-90).</div>`;
-            }
-            if (player.kin.recomendaciones) {
-                html += `<div class="mb-2"><span class="font-bold text-blue-400">ℹ Indicación Kinésica:</span> ${player.kin.recomendaciones}.</div>`;
-            }
+            document.getElementById('ind-avatar').innerText = p.name.charAt(0);
+            document.getElementById('ind-name').innerText = p.name;
+            document.getElementById('ind-pos-pill').innerText = `${p.pos} • PIERNA ${p.leg}`;
+            document.getElementById('ind-weight').innerText = p.weight > 0 ? `${p.weight} kg` : "--";
+            document.getElementById('ind-height').innerText = p.height > 0 ? `${p.height} m` : "--";
 
-            if (html === '') html = '<div class="text-green-500 font-bold">✓ Parámetros dentro de rangos normales. Mantenimiento general.</div>';
-            return html;
-        }
-
-        function renderIndividualView() {
-            const playerId = parseInt(document.getElementById('player-select').value);
-            const p = playersData.find(x => x.id === playerId);
-
-            // Perfil
-            document.getElementById('player-initials').innerText = p.name.split(',')[0].charAt(0) + p.name.split(',')[1].trim().charAt(0);
-            document.getElementById('player-name').innerText = p.name;
-            document.getElementById('player-position').innerText = `${p.position} | Dominancia: ${p.leg}`;
-            
-            // Composición
-            document.getElementById('ind-peso').innerText = p.weight + ' kg';
-            document.getElementById('ind-talla').innerText = p.height + ' m';
-            
-            document.getElementById('ind-adip').innerText = p.impedance.adip + ' %';
-            document.getElementById('card-adip').className = `p-3 rounded-lg ${getTrafficColor(p.impedance.adip, 'adipose', true)}`;
-            
-            document.getElementById('ind-musc').innerText = p.impedance.musc + ' %';
-            document.getElementById('card-musc').className = `p-3 rounded-lg ${getTrafficColor(p.impedance.musc, 'muscle', true)}`;
-
-            // Radar Impedancia
-            destroyChart('chart-radar-ind');
-            const ctxRadar = document.getElementById('chart-radar-ind').getContext('2d');
-            chartInstances['chart-radar-ind'] = new Chart(ctxRadar, {
+            if(currentCharts.indRadar) currentCharts.indRadar.destroy();
+            currentCharts.indRadar = new Chart(document.getElementById('chart-ind-radar'), {
                 type: 'radar',
                 data: {
-                    labels: ['Masa Muscular', 'Adiposidad (Invertido)', 'Visceral (Invertido)'], // Invertidos visualmente para que grande = mejor
+                    labels: ['Músculo %', 'Grasa % (Inv)', 'Visceral (Inv)', 'Yo-Yo Test', 'CMJ (cm)'],
                     datasets: [{
-                        label: p.name,
-                        data: [p.impedance.musc, 30 - p.impedance.adip, 10 - p.impedance.visc], // Normalizacion simple visual
+                        label: 'Jugador',
+                        data: [p.musc, 35 - p.adip, 15 - p.visc, p.y26 || p.y25, p.cmj],
                         backgroundColor: 'rgba(59, 130, 246, 0.2)',
                         borderColor: '#3b82f6',
-                        pointBackgroundColor: '#3b82f6',
-                        borderWidth: 2
+                        pointBackgroundColor: '#3b82f6'
                     }]
                 },
                 options: {
-                    scales: { r: { angleLines: { color: '#334155' }, grid: { color: '#334155' }, pointLabels: { color: '#94a3b8' }, ticks: { display: false } } },
+                    scales: { r: { angleLines: { color: '#334155' }, grid: { color: '#334155' }, pointLabels: { color: '#94a3b8', font: { weight: 'bold' } }, ticks: { display: false } } },
                     plugins: { legend: { display: false } }
                 }
             });
 
-            // YoYo
-            destroyChart('chart-yoyo-ind');
-            const ctxYoyoInd = document.getElementById('chart-yoyo-ind').getContext('2d');
-            chartInstances['chart-yoyo-ind'] = new Chart(ctxYoyoInd, {
-                type: 'bar',
+            if(currentCharts.indYoYo) currentCharts.indYoYo.destroy();
+            currentCharts.indYoYo = new Chart(document.getElementById('chart-ind-yoyo'), {
+                type: 'line',
                 data: {
                     labels: ['2025', '2026'],
                     datasets: [{
-                        label: 'Nivel Alcanzado',
-                        data: [p.yoyo.y2025, p.yoyo.y2026],
-                        backgroundColor: ['#475569', p.yoyo.dif >= 0 ? '#22c55e' : '#ef4444'],
-                        borderRadius: 4
+                        label: 'Nivel',
+                        data: [p.y25, p.y26 || p.y25],
+                        borderColor: '#3b82f6',
+                        backgroundColor: '#3b82f6',
+                        tension: 0.3
                     }]
                 },
-                options: { scales: { y: { min: 15, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, x: { ticks: { color: '#94a3b8' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
+                options: { scales: { y: { min: 15, grid: { color: '#334155' }, ticks: { color: '#64748b' } } }, plugins: { legend: { display: false } } }
             });
 
-            const yInd = document.getElementById('yoyo-indicator');
-            yInd.innerText = (p.yoyo.dif > 0 ? '+' : '') + p.yoyo.dif;
-            yInd.className = `w-16 h-16 rounded-full flex items-center justify-center font-bold text-xl mb-6 text-white ${p.yoyo.dif > 0 ? 'bg-green-600' : (p.yoyo.dif < 0 ? 'bg-red-600' : 'bg-yellow-600')}`;
+            const asym = Math.abs(p.asym_cmj);
+            const asymCircle = document.getElementById('ind-asym-circle');
+            const asymVal = document.getElementById('ind-asym-val');
+            asymVal.innerText = `${p.asym_cmj}%`;
+            document.getElementById('ind-cmj').innerText = p.cmj > 0 ? `${p.cmj} cm` : "--";
+            document.getElementById('ind-broad').innerText = p.broad > 0 ? `${p.broad} m` : "--";
 
-            // Potencia
-            document.getElementById('ind-cmj').innerText = p.power.cmj;
-            document.getElementById('ind-asym').innerText = p.power.asym_cmj + ' %';
-            document.getElementById('card-asym').className = `p-3 rounded-lg ${getTrafficColor(p.power.asym_cmj, 'asymmetry', true)}`;
+            if(asym <= 10) asymCircle.style.borderColor = '#22c55e';
+            else if(asym <= 15) asymCircle.style.borderColor = '#eab308';
+            else asymCircle.style.borderColor = '#ef4444';
 
-            destroyChart('chart-power-ind');
-            const ctxPower = document.getElementById('chart-power-ind').getContext('2d');
-            chartInstances['chart-power-ind'] = new Chart(ctxPower, {
-                type: 'bar',
-                data: {
-                    labels: ['CMJ Der', 'CMJ Izq', 'Broad Der', 'Broad Izq'],
-                    datasets: [{
-                        label: 'Distancia/Altura',
-                        data: [p.power.cmj_de, p.power.cmj_iz, p.power.broad_de*10, p.power.broad_iz*10], // Broad x10 para visualizacion en misma escala
-                        backgroundColor: ['#3b82f6', '#8b5cf6', '#3b82f6', '#8b5cf6'],
-                    }]
-                },
-                options: { scales: { y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, x: { ticks: { color: '#94a3b8' }, grid: { display: false } } }, plugins: { legend: { display: false } } }
-            });
+            document.getElementById('kin-tob').innerText = p.kin.t || "Sin datos";
+            document.getElementById('kin-cad').innerText = p.kin.c || "Sin datos";
+            document.getElementById('kin-uni').innerText = p.kin.u || "Sin datos";
+            document.getElementById('kin-sen').innerText = p.kin.s || "Sin datos";
 
-            // Kinésico & Alertas
-            document.getElementById('kin-tobillos').innerText = p.kin.tobillos;
-            document.getElementById('kin-cadera').innerText = p.kin.cadera;
-            document.getElementById('kin-unipodal').innerText = p.kin.unipodal;
-            
-            document.getElementById('ind-alerts').innerHTML = generateActionPlan(p);
+            let rec = "";
+            if(p.adip > 18) rec += "• <b>Prioridad Nutricional:</b> Descenso de tejido adiposo (lastre) para mejorar aceleración. <br>";
+            if(asym > 12) rec += `• <b>Déficit Bilateral:</b> Compensación de fuerza unilateral en pierna ${p.asym_cmj > 0 ? 'izquierda' : 'derecha'}. <br>`;
+            if(p.kin.t.includes('reducida') || p.kin.s.includes('mejorar')) rec += "• <b>Movilidad:</b> Protocolo de dorsiflexión de tobillo pre-entrenamiento. <br>";
+            if(rec === "") rec = "✓ <b>Óptimo:</b> Mantener estímulos actuales y foco en prevención de lesiones.";
+            document.getElementById('ind-recommendation').innerHTML = rec;
         }
 
-        // --- COMPARE ---
-        function renderCompareView() {
-            const p1Id = parseInt(document.getElementById('compare-select-1').value);
-            const p2Id = parseInt(document.getElementById('compare-select-2').value);
-            const p1 = playersData.find(x => x.id === p1Id);
-            const p2 = playersData.find(x => x.id === p2Id);
+        function renderCompare() {
+            const p1 = playersData.find(x => x.id == document.getElementById('comp-1').value);
+            const p2 = playersData.find(x => x.id == document.getElementById('comp-2').value);
 
-            document.getElementById('comp-name-1').innerText = p1.name;
-            document.getElementById('comp-name-2').innerText = p2.name;
-
-            // Radar
-            destroyChart('chart-compare-radar');
-            const ctxCompRadar = document.getElementById('chart-compare-radar').getContext('2d');
-            chartInstances['chart-compare-radar'] = new Chart(ctxCompRadar, {
+            if(currentCharts.compRadar) currentCharts.compRadar.destroy();
+            currentCharts.compRadar = new Chart(document.getElementById('chart-compare-radar'), {
                 type: 'radar',
                 data: {
-                    labels: ['Músculo', 'CMJ Bipodal', 'Yo-Yo 2026', 'Broad Jump'],
+                    labels: ['Músculo', 'Yo-Yo', 'CMJ', 'Broad', 'Grasa (Inv)'],
                     datasets: [
-                        { label: p1.name, data: [p1.impedance.musc, p1.power.cmj, p1.yoyo.y2026*2, p1.power.broad*10], backgroundColor: 'rgba(59, 130, 246, 0.4)', borderColor: '#3b82f6' },
-                        { label: p2.name, data: [p2.impedance.musc, p2.power.cmj, p2.yoyo.y2026*2, p2.power.broad*10], backgroundColor: 'rgba(239, 68, 68, 0.4)', borderColor: '#ef4444' }
+                        { label: p1.name, data: [p1.musc, p1.y26 || p1.y25, p1.cmj, p1.broad*20, 30-p1.adip], borderColor: '#3b82f6' },
+                        { label: p2.name, data: [p2.musc, p2.y26 || p2.y25, p2.cmj, p2.broad*20, 30-p2.adip], borderColor: '#10b981' }
                     ]
-                },
-                options: { scales: { r: { angleLines: { color: '#334155' }, grid: { color: '#334155' }, pointLabels: { color: '#94a3b8' }, ticks: { display: false } } }, plugins: { legend: { labels: { color: '#cbd5e1' } } } }
+                }
             });
 
-            // Barras
-            destroyChart('chart-compare-bar');
-            const ctxCompBar = document.getElementById('chart-compare-bar').getContext('2d');
-            chartInstances['chart-compare-bar'] = new Chart(ctxCompBar, {
+            if(currentCharts.compBars) currentCharts.compBars.destroy();
+            currentCharts.compBars = new Chart(document.getElementById('chart-compare-bars'), {
                 type: 'bar',
                 data: {
-                    labels: ['Asimetría CMJ (%)', 'Adiposidad (%)'],
+                    labels: ['CMJ (cm)', 'Broad Jump (x100)'],
                     datasets: [
-                        { label: p1.name, data: [Math.abs(p1.power.asym_cmj), p1.impedance.adip], backgroundColor: '#3b82f6' },
-                        { label: p2.name, data: [Math.abs(p2.power.asym_cmj), p2.impedance.adip], backgroundColor: '#ef4444' }
+                        { label: p1.name, data: [p1.cmj, p1.broad*100], backgroundColor: '#3b82f6' },
+                        { label: p2.name, data: [p2.cmj, p2.broad*100], backgroundColor: '#10b981' }
                     ]
-                },
-                options: { responsive: true, scales: { y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, x: { ticks: { color: '#94a3b8' }, grid: { display: false } } }, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1' } } } }
-            });
-
-            // Tabla
-            const tb = document.getElementById('compare-table-body');
-            const metrics = [
-                { label: 'Peso (kg)', v1: p1.weight, v2: p2.weight },
-                { label: 'Masa Muscular (%)', v1: p1.impedance.musc, v2: p2.impedance.musc },
-                { label: 'Adiposidad (%)', v1: p1.impedance.adip, v2: p2.impedance.adip },
-                { label: 'CMJ Bipodal (cm)', v1: p1.power.cmj, v2: p2.power.cmj },
-                { label: 'Yo-Yo 2026', v1: p1.yoyo.y2026, v2: p2.yoyo.y2026 },
-            ];
-
-            tb.innerHTML = '';
-            metrics.forEach(m => {
-                const diff = (m.v1 - m.v2).toFixed(2);
-                const diffHtml = diff > 0 ? `<span class="text-blue-400">+${diff}</span>` : (diff < 0 ? `<span class="text-red-400">${diff}</span>` : `<span class="text-slate-500">0</span>`);
-                tb.innerHTML += `
-                    <tr class="border-b border-slate-700 bg-slate-800">
-                        <td class="px-6 py-4 font-medium text-white">${m.label}</td>
-                        <td class="px-6 py-4">${m.v1}</td>
-                        <td class="px-6 py-4">${m.v2}</td>
-                        <td class="px-6 py-4 font-bold">${diffHtml}</td>
-                    </tr>
-                `;
+                }
             });
         }
 
-        window.onload = init;
+        function init() {
+            const sels = ['player-select', 'comp-1', 'comp-2'];
+            sels.forEach(s => {
+                const el = document.getElementById(s);
+                playersData.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.text = p.name;
+                    el.appendChild(opt);
+                });
+            });
+            document.getElementById('comp-2').selectedIndex = 1;
+            renderGeneral();
+        }
+
+        init();
     </script>
 </body>
 </html>
