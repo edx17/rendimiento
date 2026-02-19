@@ -10,12 +10,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
         .glass-panel { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); border-radius: 1.25rem; }
-        .btn-nav { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .btn-nav { transition: all 0.3s ease; cursor: pointer; }
         .btn-nav.active { background-color: #3b82f6; color: white; box-shadow: 0 0 20px rgba(59, 130, 246, 0.5); }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        canvas { max-height: 450px; width: 100% !important; }
-        .metric-value { font-variant-numeric: tabular-nums; }
+        canvas { max-height: 400px; width: 100% !important; }
+        .metric-card { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(51, 65, 85, 0.5); }
     </style>
 </head>
 <body class="min-h-screen">
@@ -26,59 +26,59 @@
                 <img src="EscudoLiber.png" alt="Escudo Libertadores" class="w-16 h-16 object-contain bg-white rounded-2xl p-1.5 shadow-2xl border border-slate-700">
                 <div>
                     <h1 class="text-2xl font-black tracking-tighter uppercase leading-none italic">Libertadores <span class="text-blue-500">PRO-PERFORMANCE</span></h1>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Ciencia Aplicada al Deporte • 1ra AFA</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Ciencia Aplicada • 1ra AFA</p>
                 </div>
             </div>
-            <nav class="flex p-1.5 bg-slate-950/50 rounded-2xl border border-slate-800 shadow-inner">
-                <button onclick="setTab('general')" id="tab-general" class="btn-nav active px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider">EQUIPO</button>
-                <button onclick="setTab('individual')" id="tab-individual" class="btn-nav px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-slate-500">INDIVIDUAL</button>
-                <button onclick="setTab('compare')" id="tab-compare" class="btn-nav px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider text-slate-500">MULTI-COMPARE</button>
+            <nav class="flex p-1.5 bg-slate-950/50 rounded-2xl border border-slate-800">
+                <button onclick="setTab('general')" id="tab-general" class="btn-nav active px-6 py-2.5 rounded-xl text-xs font-black uppercase">Equipo</button>
+                <button onclick="setTab('individual')" id="tab-individual" class="btn-nav px-6 py-2.5 rounded-xl text-xs font-black uppercase text-slate-500">Individual</button>
+                <button onclick="setTab('compare')" id="tab-compare" class="btn-nav px-6 py-2.5 rounded-xl text-xs font-black uppercase text-slate-500">Staff-Compare</button>
             </nav>
         </div>
     </header>
 
     <main class="max-w-[1400px] mx-auto px-4 py-8">
 
-        <!-- VISTA: GENERAL (EQUIPO) -->
+        <!-- VISTA: EQUIPO -->
         <section id="view-general" class="space-y-8 animate-in fade-in duration-500">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="glass-panel p-6 border-l-4 border-l-blue-500">
-                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Media Muscular</h4>
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase">Media Muscular</h4>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-4xl font-black metric-value" id="stat-musc">--</span>
-                        <span class="text-xs text-slate-500 font-bold">vs 48% Ideal</span>
+                        <span class="text-4xl font-black" id="stat-musc">--</span>
+                        <span class="text-xs text-slate-500">vs 48% Ideal</span>
                     </div>
                 </div>
                 <div class="glass-panel p-6 border-l-4 border-l-emerald-500">
-                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Media Adiposa</h4>
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase">Media Adiposa</h4>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-4xl font-black text-emerald-400 metric-value" id="stat-adip">--</span>
-                        <span class="text-xs text-slate-500 font-bold">vs 11% Ideal</span>
+                        <span class="text-4xl font-black text-emerald-400" id="stat-adip">--</span>
+                        <span class="text-xs text-slate-500">vs 11% Ideal</span>
                     </div>
                 </div>
                 <div class="glass-panel p-6 border-l-4 border-l-amber-500">
-                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Asimetría Media</h4>
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase">Asimetría Promedio</h4>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-4xl font-black text-amber-400 metric-value" id="stat-asym">--</span>
-                        <span class="text-xs text-slate-500 font-bold">% en Salto</span>
+                        <span class="text-4xl font-black text-amber-400" id="stat-asym">--</span>
+                        <span class="text-xs text-slate-500">% en CMJ</span>
                     </div>
                 </div>
                 <div class="glass-panel p-6 border-l-4 border-l-red-500">
-                    <h4 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Alertas</h4>
+                    <h4 class="text-[10px] font-black text-slate-500 uppercase">Críticos</h4>
                     <div class="flex items-baseline gap-2">
-                        <span class="text-4xl font-black text-red-500 metric-value" id="stat-alerts">--</span>
-                        <span class="text-xs text-slate-500 font-bold">Críticos</span>
+                        <span class="text-4xl font-black text-red-500" id="stat-alerts">--</span>
+                        <span class="text-xs text-slate-500">Alertas Activas</span>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div class="glass-panel p-8 lg:col-span-2">
-                    <h3 class="text-sm font-black uppercase tracking-widest italic mb-8 italic">Performance CMJ: Puestos vs. Ideal Elite</h3>
+                    <h3 class="text-sm font-black uppercase mb-8 italic">Métricas de Puesto vs. Ideal Elite</h3>
                     <canvas id="chart-team-benchmark"></canvas>
                 </div>
                 <div class="glass-panel p-8">
-                    <h3 class="text-sm font-black uppercase tracking-widest mb-8 italic">Impedancia Plantel</h3>
+                    <h3 class="text-sm font-black uppercase mb-8 italic">Impedancia Plantel</h3>
                     <canvas id="chart-team-impedance"></canvas>
                 </div>
             </div>
@@ -87,40 +87,53 @@
         <!-- VISTA: INDIVIDUAL -->
         <section id="view-individual" class="hidden space-y-8">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <div class="lg:col-span-3 space-y-6">
+                <!-- Perfil -->
+                <div class="lg:col-span-3">
                     <div class="glass-panel p-8 sticky top-28">
-                        <label class="text-[9px] font-black text-slate-500 uppercase tracking-widest block mb-3">Expediente</label>
-                        <select id="player-select" onchange="renderIndividual()" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-sm font-black focus:ring-2 focus:ring-blue-500 appearance-none"></select>
+                        <label class="text-[9px] font-black text-slate-500 uppercase block mb-3">Expediente</label>
+                        <select id="player-select" onchange="renderIndividual()" class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-sm font-black focus:ring-2 focus:ring-blue-500 appearance-none mb-8 cursor-pointer"></select>
                         
-                        <div class="mt-8 text-center">
-                            <div class="w-32 h-32 bg-slate-800 rounded-3xl mx-auto mb-6 flex items-center justify-center border-4 border-blue-500 shadow-2xl overflow-hidden text-5xl font-black text-slate-600" id="ind-avatar-text">--</div>
+                        <div class="text-center">
+                            <div class="w-32 h-32 bg-slate-800 rounded-3xl mx-auto mb-6 flex items-center justify-center border-4 border-blue-500 shadow-2xl overflow-hidden text-5xl font-black text-slate-600" id="ind-avatar">--</div>
                             <h2 class="text-2xl font-black uppercase tracking-tighter italic" id="ind-name">--</h2>
-                            <p class="text-[10px] text-blue-400 font-bold uppercase mt-2 tracking-widest" id="ind-pos-label">--</p>
+                            <p class="text-[10px] text-blue-400 font-bold uppercase mt-2" id="ind-pos">--</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 mt-8">
+                            <div class="metric-card p-3 rounded-xl">
+                                <span class="text-[8px] text-slate-500 uppercase font-black block">Peso</span>
+                                <span class="font-bold text-sm" id="ind-weight">--</span>
+                            </div>
+                            <div class="metric-card p-3 rounded-xl">
+                                <span class="text-[8px] text-slate-500 uppercase font-black block">Talla</span>
+                                <span class="font-bold text-sm" id="ind-height">--</span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Datos -->
                 <div class="lg:col-span-9 space-y-8">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="glass-panel p-8">
-                            <h3 class="text-xs font-black uppercase mb-8 italic border-b border-slate-800 pb-3">Benchmark 360: Jugador vs. Grupo vs. Ideal</h3>
+                            <h3 class="text-xs font-black uppercase mb-8 italic border-b border-slate-800 pb-3">Benchmark 360: Jugador vs. Puesto vs. Ideal</h3>
                             <canvas id="chart-ind-radar"></canvas>
                         </div>
                         <div class="glass-panel p-8">
-                            <h3 class="text-xs font-black uppercase mb-8 italic border-b border-slate-800 pb-3">Yo-Yo Evolutivo y % Adiposidad</h3>
+                            <h3 class="text-xs font-black uppercase mb-8 italic border-b border-slate-800 pb-3">Yo-Yo Test & Impedancia (Salud)</h3>
                             <canvas id="chart-ind-yoyo"></canvas>
                         </div>
                     </div>
 
                     <div class="glass-panel p-8">
-                        <h3 class="text-xs font-black uppercase mb-8 italic border-b border-slate-800 pb-3">Evaluación Potencia: Bipodal vs. Mono-podal</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <h3 class="text-xs font-black uppercase mb-8 italic border-b border-slate-800 pb-3">Desglose de Potencia: Salto Bipodal vs. Mono-podal</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
                             <div>
-                                <h4 class="text-[10px] font-black uppercase text-slate-500 mb-4">CMJ (Centi-metros)</h4>
+                                <h4 class="text-[10px] font-black uppercase text-slate-500 mb-6">CMJ (Centi-metros)</h4>
                                 <canvas id="chart-ind-power-cmj"></canvas>
                             </div>
                             <div>
-                                <h4 class="text-[10px] font-black uppercase text-slate-500 mb-4">Broad Jump (Metros)</h4>
+                                <h4 class="text-[10px] font-black uppercase text-slate-500 mb-6">Broad Jump (Metros)</h4>
                                 <canvas id="chart-ind-power-broad"></canvas>
                             </div>
                         </div>
@@ -128,12 +141,12 @@
 
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="glass-panel p-8">
-                            <h3 class="text-xs font-black uppercase mb-6 italic border-b border-slate-800 pb-3 text-indigo-400">Hallazgos Kinésicos</h3>
-                            <div class="space-y-4" id="ind-kin-details"></div>
+                            <h3 class="text-xs font-black uppercase mb-6 italic border-b border-slate-800 pb-3 text-indigo-400">Diagnóstico Kinésico</h3>
+                            <div class="space-y-4" id="ind-kin"></div>
                         </div>
                         <div class="glass-panel p-8 border-l-4 border-l-blue-500">
-                            <h3 class="text-xs font-black uppercase mb-6 italic border-b border-slate-800 pb-3 text-blue-400">Prescripción Correctiva</h3>
-                            <div class="space-y-3" id="ind-exercise-list"></div>
+                            <h3 class="text-xs font-black uppercase mb-6 italic border-b border-slate-800 pb-3 text-blue-400">Ejercicios Correctivos</h3>
+                            <div class="space-y-3" id="ind-exercises"></div>
                         </div>
                     </div>
                 </div>
@@ -143,12 +156,12 @@
         <!-- VISTA: MULTI-COMPARE -->
         <section id="view-compare" class="hidden space-y-8">
             <div class="glass-panel p-8">
-                <h2 class="text-2xl font-black uppercase italic tracking-tighter mb-8">Análisis Staff Técnico</h2>
+                <h2 class="text-2xl font-black uppercase italic tracking-tighter mb-8">Análisis Multi-Puesto (Staff)</h2>
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10" id="compare-selectors"></div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div class="bg-slate-950/40 rounded-3xl p-8 border border-slate-800">
-                        <h3 class="text-xs font-black uppercase mb-8 italic border-b border-slate-800 pb-3">Atributos vs. Ideal Elite</h3>
+                        <h3 class="text-xs font-black uppercase mb-8 italic border-b border-slate-800 pb-3">Radar de Atributos Grupal</h3>
                         <canvas id="chart-multi-radar"></canvas>
                     </div>
                     <div class="bg-slate-950/40 rounded-3xl p-8 border border-slate-800">
@@ -163,50 +176,45 @@
 
     <script>
         const playersData = [
-            { id: 1, name: "Alberto, Joaquin", pos: "Cierre", leg: "Derecho", weight: 68.3, height: 1.77, musc: 45.2, adip: 11.8, visc: 4, imc: 21.8, y25: 20.0, y26: 20.8, dif: 0.8, cmj: 44.1, cmj_de: 25.5, cmj_iz: 24.6, broad: 2.58, broad_de: 2.13, broad_iz: 2.2, asym_cmj: -3.52, asym_br: 3.28, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "Buena profundidad y movilidad" } },
-            { id: 2, name: "Arzani, Ramiro", pos: "Arquero", leg: "Izquierda", weight: 75.8, height: 1.77, musc: 41.8, adip: 17.3, visc: 6, imc: 24.5, y25: 18.0, y26: 18.1, dif: 0.1, cmj: 45.3, cmj_de: 28.2, cmj_iz: 24.6, broad: 2.46, broad_de: 2.35, broad_iz: 2.1, asym_cmj: -12.77, asym_br: -10.64, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "mejorar movilidad tobillo" } },
-            { id: 3, name: "Benitez, Marcos", pos: "Ala", leg: "Derecho", weight: 60.8, height: 1.6, musc: 41.5, adip: 19.7, visc: 7, imc: 23.8, y25: 18.4, y26: 21.3, dif: 2.9, cmj: 44.1, cmj_de: 22, cmj_iz: 23.8, broad: 2.25, broad_de: 2.04, broad_iz: 2.1, asym_cmj: 8.18, asym_br: 2.94, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "" } },
-            { id: 4, name: "Cabrera, Agustín", pos: "Arquero", leg: "Derecho", weight: 72.4, height: 1.74, musc: 43.8, adip: 14.8, visc: 5, imc: 23.9, y25: 18.0, y26: 18.0, cmj: 36.3, cmj_de: 19.6, cmj_iz: 22.9, broad: 2.34, broad_de: 2.03, broad_iz: 2.01, asym_cmj: 16.84, asym_br: -0.98, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "Buena profundidad y movilidad" } },
-            { id: 5, name: "Del Palacio, Maximiliano", pos: "Ala", leg: "Derecho", weight: 80.4, height: 1.72, musc: 34.3, adip: 29.1, visc: 10, imc: 27.2, y25: 18.5, y26: 18.5, cmj: 32, cmj_de: 15, cmj_iz: 16, broad: 2.1, broad_de: 1.1, broad_iz: 1.0, asym_cmj: 6.5, asym_br: 10, kin: { t: "", c: "", u: "", s: "" } },
-            { id: 6, name: "Figueroa, Frank", pos: "Arquero", leg: "Derecho", weight: 87.3, height: 1.7, musc: 34.3, adip: 31.0, visc: 11, imc: 30.2, y25: 18.1, y26: 16.2, cmj: 36.3, cmj_de: 20.4, cmj_iz: 18.8, broad: 2.1, broad_de: 1.95, broad_iz: 1.87, asym_cmj: -7.84, asym_br: -4.1, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/cadera/pelvis" } },
-            { id: 7, name: "Fiocchi, Walter", pos: "Ala", leg: "Izquierda", weight: 89.3, height: 1.74, musc: 37.3, adip: 24.7, visc: 10, imc: 29.2, y25: 18.4, y26: 18.4, cmj: 37.4, cmj_de: 18.8, cmj_iz: 18.8, broad: 2.25, broad_de: 1.85, broad_iz: 2.1, asym_cmj: 0, asym_br: 13.5, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/cadera/pelvis" } },
-            { id: 8, name: "Gardiol, Agustín", pos: "Ala", leg: "Derecho", weight: 68.5, height: 1.75, musc: 40.9, adip: 17.9, visc: 5, imc: 22.4, y25: 20.3, y26: 20.3, cmj: 34.2, cmj_de: 22, cmj_iz: 18, broad: 2.5, broad_de: 2, broad_iz: 1.97, asym_cmj: -18.18, asym_br: -1.5, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "mejorar movilidad escapular" } },
-            { id: 9, name: "Gonzi, Nicolás", pos: "Cierre", leg: "Derecho", weight: 71.5, height: 1.74, musc: 41.4, adip: 17.6, visc: 6, imc: 23.6, y25: 19.1, y26: 19.1, cmj: 39.6, cmj_de: 23.8, cmj_iz: 24.6, broad: 2.34, broad_de: 2.1, broad_iz: 2, asym_cmj: 3.36, asym_br: -4.76, kin: { t: "mejorar movilidad", c: "reducir tension + movilidad cadera", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 10, name: "Gregorio, Lautaro", pos: "Pivot", leg: "Izquierda", weight: 78.1, height: 1.84, musc: 43.0, adip: 13.4, visc: 4, imc: 22.8, y25: 18.0, y26: 18.5, cmj: 41.8, cmj_de: 22, cmj_iz: 20.4, broad: 2.2, broad_de: 1.9, broad_iz: 1.91, asym_cmj: -7.27, asym_br: 0.52, kin: { t: "Movilidad optima", c: "reducir tension + movilidad cadera", u: "buena movilidad y estabilidad", s: "tobillo/escapular" } },
-            { id: 11, name: "Gutiérrez, Yonathan", pos: "Ala", leg: "Derecho", weight: 75.4, height: 1.79, musc: 38.4, adip: 21.8, visc: 6, imc: 23.5, y25: 18.1, y26: 18.1, cmj: 52.8, cmj_de: 30.1, cmj_iz: 36.3, broad: 2.51, broad_de: 2.42, broad_iz: 2.46, asym_cmj: 20.6, asym_br: 1.65, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "mejorar movilidad escapular" } },
-            { id: 12, name: "Ledesma, Facundo", pos: "Ala", leg: "Izquierda", weight: 70.7, height: 1.74, musc: 38.9, adip: 22.3, visc: 6, imc: 23.4, y25: 20.0, y26: 19.5, cmj: 34.2, cmj_de: 19.6, cmj_iz: 16.6, broad: 2.1, broad_de: 1.82, broad_iz: 1.92, asym_cmj: -15.31, asym_br: 5.49, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 13, name: "Migliorisi, Diego", pos: "Ala", leg: "Izquierda", weight: 72.1, height: 1.76, musc: 41.0, adip: 15.2, visc: 4, imc: 23.3, y25: 17.4, y26: 17.0, cmj: 30.1, cmj_de: 15.9, cmj_iz: 16.7, broad: 1.93, broad_de: 1.95, broad_iz: 1.92, asym_cmj: 5.03, asym_br: -1.53, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 14, name: "Quiroga, Gonzalo", pos: "Cierre", leg: "Derecho", weight: 75, height: 1.78, musc: 42, adip: 18, visc: 5, y25: 18.5, y26: 18.5, cmj: 38, cmj_de: 18, cmj_iz: 19, broad: 2.3, broad_de: 2.1, broad_iz: 2.1, asym_cmj: 5, asym_br: 0, kin: { t: "", c: "", u: "", s: "" } },
-            { id: 15, name: "Reche, Agustín", pos: "Ala", leg: "Izquierda", weight: 71.2, height: 1.71, musc: 40.5, adip: 19.6, visc: 7, imc: 24.3, y25: 19.6, y26: 19.6, cmj: 35, cmj_de: 17, cmj_iz: 18, broad: 2.2, broad_de: 1.0, broad_iz: 1.1, asym_cmj: 5, asym_br: 10, kin: { t: "", c: "", u: "", s: "" } },
-            { id: 16, name: "Rumak, Brian", pos: "Cierre", leg: "Derecho", weight: 78.9, height: 1.8, musc: 40.3, adip: 18.6, visc: 6, imc: 24.6, y25: 20.0, y26: 20.0, cmj: 39.6, cmj_de: 18, cmj_iz: 15.9, broad: 2.3, broad_de: 2, broad_iz: 2, asym_cmj: -11.66, asym_br: 0, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 17, name: "Silva, Thiago", pos: "Cierre", leg: "Derecho", weight: 85.7, height: 1.78, musc: 36.4, adip: 26.9, visc: 8, imc: 27.9, y25: 18.2, y26: 18.8, cmj: 32.1, cmj_de: 17.3, cmj_iz: 13.2, broad: 2.13, broad_de: 1.96, broad_iz: 1.98, asym_cmj: -23.70, asym_br: 1.02, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 18, name: "Smokvina, Ignacio", pos: "Ala", leg: "Izquierda", weight: 69.8, height: 1.73, musc: 41.1, adip: 19.4, visc: 5, imc: 23.3, y25: 19.4, y26: 19.4, cmj: 34.2, cmj_de: 18.8, cmj_iz: 15.9, broad: 2.09, broad_de: 1.88, broad_iz: 1.94, asym_cmj: -15.42, asym_br: 3.19, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "tobillo/escapular/cadera" } },
-            { id: 21, name: "Benquet, Jonathan", pos: "Pivot", leg: "Derecho", weight: 74.1, height: 1.73, musc: 40.3, adip: 18.7, visc: 7, imc: 24.8, y25: 19.8, y26: 19.8, cmj: 37.4, cmj_de: 20.4, cmj_iz: 15.9, broad: 2.15, broad_de: 1.9, broad_iz: 1.89, asym_cmj: -22.05, asym_br: -0.52, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 22, name: "Almirón, Agustín", pos: "Cierre", leg: "Derecho", weight: 71.4, height: 1.77, musc: 45.0, adip: 12.9, visc: 4, imc: 22.8, y25: 17.8, y26: 18.7, cmj: 45.3, cmj_de: 21.2, cmj_iz: 22.9, broad: 2.4, broad_de: 2.02, broad_iz: 2.22, asym_cmj: 8.01, asym_br: 9.9, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 23, name: "Perviu, Thiago", pos: "Ala", leg: "Derecho", weight: 63.5, height: 1.74, musc: 47.4, adip: 9.3, visc: 3, imc: 21.0, y25: 17.2, y26: 17.3, cmj: 42.9, cmj_de: 25.5, cmj_iz: 23.8, broad: 2.36, broad_de: 2.24, broad_iz: 2.1, asym_cmj: -6.66, asym_br: -6.25, kin: { t: "Movilidad optima", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 24, name: "Stanizzi, Bautista", pos: "Ala", leg: "Izquierda", weight: 65.1, height: 1.7, musc: 42.5, adip: 17.8, visc: 5, imc: 22.5, y25: 20.0, y26: 20.0, cmj: 34.2, cmj_de: 20.4, cmj_iz: 18.8, broad: 2.1, broad_de: 2.03, broad_iz: 1.96, asym_cmj: -7.84, asym_br: -3.44, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 25, name: "Mack, Ramiro", pos: "Pivot", leg: "Izquierda", weight: 92.2, height: 1.85, musc: 39.6, adip: 20.7, visc: 7, imc: 26.9, y25: 18.1, y26: 18.1, cmj: 33.2, cmj_de: 16.7, cmj_iz: 11.9, broad: 2.33, broad_de: 2, broad_iz: 1.86, asym_cmj: -28.74, asym_br: -7, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/escapular" } }
+            { id: 1, name: "Alberto, Joaquin", pos: "Cierre", leg: "Derecho", weight: 68.3, height: 1.77, musc: 45.2, adip: 11.8, visc: 4, imc: 21.8, y25: 20.0, y26: 20.8, cmj: 44.1, cmj_de: 25.5, cmj_iz: 24.6, asym_cmj: -3.52, broad: 2.58, broad_de: 2.13, broad_iz: 2.2, asym_br: 3.28, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "poca estabilidad", s: "Buena profundidad y movilidad" } },
+            { id: 2, name: "Arzani, Ramiro", pos: "Arquero", leg: "Izquierda", weight: 75.8, height: 1.77, musc: 41.8, adip: 17.3, visc: 6, imc: 24.5, y25: 18.0, y26: 18.1, cmj: 45.3, cmj_de: 28.2, cmj_iz: 24.6, asym_cmj: -12.77, broad: 2.46, broad_de: 2.35, broad_iz: 2.1, asym_br: -10.64, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "mejorar movilidad tobillo" } },
+            { id: 3, name: "Benitez, Marcos", pos: "Ala", leg: "Derecho", weight: 60.8, height: 1.6, musc: 41.5, adip: 19.7, visc: 7, imc: 23.8, y25: 18.4, y26: 21.3, cmj: 44.1, cmj_de: 22, cmj_iz: 23.8, asym_cmj: 8.18, broad: 2.25, broad_de: 2.04, broad_iz: 2.1, asym_br: 2.94, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "" } },
+            { id: 4, name: "Cabrera, Agustín", pos: "Arquero", leg: "Derecho", weight: 72.4, height: 1.74, musc: 43.8, adip: 14.8, visc: 5, imc: 23.9, y25: 18.0, y26: 18.0, cmj: 36.3, cmj_de: 19.6, cmj_iz: 22.9, asym_cmj: 16.84, broad: 2.34, broad_de: 2.03, broad_iz: 2.01, asym_br: -0.98, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "Buena profundidad y movilidad" } },
+            { id: 5, name: "Del Palacio, Maximiliano", pos: "Ala", leg: "Derecho", weight: 80.4, height: 1.72, musc: 34.3, adip: 29.1, visc: 10, imc: 27.2, y25: 18.5, y26: 18.5, cmj: 32, cmj_de: 15, cmj_iz: 16, asym_cmj: 6.5, broad: 2.1, broad_de: 1.1, broad_iz: 1.0, asym_br: 10, kin: { t: "", c: "", u: "", s: "" } },
+            { id: 6, name: "Figueroa, Frank", pos: "Arquero", leg: "Derecho", weight: 87.3, height: 1.7, musc: 34.3, adip: 31.0, visc: 11, imc: 30.2, y25: 18.1, y26: 16.2, cmj: 36.3, cmj_de: 20.4, cmj_iz: 18.8, asym_cmj: -7.84, broad: 2.1, broad_de: 1.95, broad_iz: 1.87, asym_br: -4.1, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/cadera/pelvis" } },
+            { id: 7, name: "Fiocchi, Walter", pos: "Ala", leg: "Izquierda", weight: 89.3, height: 1.74, musc: 37.3, adip: 24.7, visc: 10, imc: 29.2, y25: 18.4, y26: 18.4, cmj: 37.4, cmj_de: 18.8, cmj_iz: 18.8, asym_cmj: 0, broad: 2.25, broad_de: 1.85, broad_iz: 2.1, asym_br: 13.5, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/cadera/pelvis" } },
+            { id: 8, name: "Gardiol, Agustín", pos: "Ala", leg: "Derecho", weight: 68.5, height: 1.75, musc: 40.9, adip: 17.9, visc: 5, imc: 22.4, y25: 20.3, y26: 20.3, cmj: 34.2, cmj_de: 22, cmj_iz: 18, asym_cmj: -18.18, broad: 2.5, broad_de: 2, broad_iz: 1.97, asym_br: -1.5, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "mejorar movilidad escapular" } },
+            { id: 9, name: "Gonzi, Nicolás", pos: "Cierre", leg: "Derecho", weight: 71.5, height: 1.74, musc: 41.4, adip: 17.6, visc: 6, imc: 23.6, y25: 19.1, y26: 19.1, cmj: 39.6, cmj_de: 23.8, cmj_iz: 24.6, asym_cmj: 3.36, broad: 2.34, broad_de: 2.1, broad_iz: 2, asym_br: -4.76, kin: { t: "mejorar movilidad", c: "reducir tension + movilidad cadera", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 10, name: "Gregorio, Lautaro", pos: "Pivot", leg: "Izquierda", weight: 78.1, height: 1.84, musc: 43.0, adip: 13.4, visc: 4, imc: 22.8, y25: 18.0, y26: 18.5, cmj: 41.8, cmj_de: 22, cmj_iz: 20.4, asym_cmj: -7.27, broad: 2.2, broad_de: 1.9, broad_iz: 1.91, asym_br: 0.52, kin: { t: "Movilidad optima", c: "reducir tension + movilidad cadera", u: "buena movilidad y estabilidad", s: "tobillo/escapular" } },
+            { id: 11, name: "Gutiérrez, Yonathan", pos: "Ala", leg: "Derecho", weight: 75.4, height: 1.79, musc: 38.4, adip: 21.8, visc: 6, imc: 23.5, y25: 18.1, y26: 18.1, cmj: 52.8, cmj_de: 30.1, cmj_iz: 36.3, asym_cmj: 20.6, broad: 2.51, broad_de: 2.42, broad_iz: 2.46, asym_br: 1.65, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "mejorar movilidad escapular" } },
+            { id: 12, name: "Ledesma, Facundo", pos: "Ala", leg: "Izquierda", weight: 70.7, height: 1.74, musc: 38.9, adip: 22.3, visc: 6, imc: 23.4, y25: 20.0, y26: 19.5, cmj: 34.2, cmj_de: 19.6, cmj_iz: 16.6, asym_cmj: -15.31, broad: 2.1, broad_de: 1.82, broad_iz: 1.92, asym_br: 5.49, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 13, name: "Migliorisi, Diego", pos: "Ala", leg: "Izquierda", weight: 72.1, height: 1.76, musc: 41.0, adip: 15.2, visc: 4, imc: 23.3, y25: 17.4, y26: 17.0, cmj: 30.1, cmj_de: 15.9, cmj_iz: 16.7, asym_cmj: 5.03, broad: 1.93, broad_de: 1.95, broad_iz: 1.92, asym_br: -1.53, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 16, name: "Rumak, Brian", pos: "Cierre", leg: "Derecho", weight: 78.9, height: 1.8, musc: 40.3, adip: 18.6, visc: 6, imc: 24.6, y25: 20.0, y26: 20.0, cmj: 39.6, cmj_de: 18, cmj_iz: 15.9, asym_cmj: -11.66, broad: 2.3, broad_de: 2, broad_iz: 2, asym_br: 0, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 17, name: "Silva, Thiago", pos: "Cierre", leg: "Derecho", weight: 85.7, height: 1.78, musc: 36.4, adip: 26.9, visc: 8, imc: 27.9, y25: 18.2, y26: 18.8, cmj: 32.1, cmj_de: 17.3, cmj_iz: 13.2, asym_cmj: -23.70, broad: 2.13, broad_de: 1.96, broad_iz: 1.98, asym_br: 1.02, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 18, name: "Smokvina, Ignacio", pos: "Ala", leg: "Izquierda", weight: 69.8, height: 1.73, musc: 41.1, adip: 19.4, visc: 5, imc: 23.3, y25: 19.4, y26: 19.4, cmj: 34.2, cmj_de: 18.8, cmj_iz: 15.9, asym_cmj: -15.42, broad: 2.09, broad_de: 1.88, broad_iz: 1.94, asym_br: 3.19, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "tobillo/escapular/cadera" } },
+            { id: 21, name: "Benquet, Jonathan", pos: "Pivot", leg: "Derecho", weight: 74.1, height: 1.73, musc: 40.3, adip: 18.7, visc: 7, imc: 24.8, y25: 19.8, y26: 19.8, cmj: 37.4, cmj_de: 20.4, cmj_iz: 15.9, asym_cmj: -22.05, broad: 2.15, broad_de: 1.9, broad_iz: 1.89, asym_br: -0.52, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 22, name: "Almirón, Agustín", pos: "Cierre", leg: "Derecho", weight: 71.4, height: 1.77, musc: 45.0, adip: 12.9, visc: 4, imc: 22.8, y25: 17.8, y26: 18.7, cmj: 45.3, cmj_de: 21.2, cmj_iz: 22.9, asym_cmj: 8.01, broad: 2.4, broad_de: 2.02, broad_iz: 2.22, asym_br: 9.9, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 23, name: "Perviu, Thiago", pos: "Ala", leg: "Derecho", weight: 63.5, height: 1.74, musc: 47.4, adip: 9.3, visc: 3, imc: 21.0, y25: 17.2, y26: 17.3, cmj: 42.9, cmj_de: 25.5, cmj_iz: 23.8, asym_cmj: -6.66, broad: 2.36, broad_de: 2.24, broad_iz: 2.1, asym_br: -6.25, kin: { t: "Movilidad optima", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 24, name: "Stanizzi, Bautista", pos: "Ala", leg: "Izquierda", weight: 65.1, height: 1.7, musc: 42.5, adip: 17.8, visc: 5, imc: 22.5, y25: 20.0, y26: 20.0, cmj: 34.2, cmj_de: 20.4, cmj_iz: 18.8, asym_cmj: -7.84, broad: 2.1, broad_de: 2.03, broad_iz: 1.96, asym_br: -3.44, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
+            { id: 25, name: "Mack, Ramiro", pos: "Pivot", leg: "Izquierda", weight: 92.2, height: 1.85, musc: 39.6, adip: 20.7, visc: 7, imc: 26.9, y25: 18.1, y26: 18.1, cmj: 33.2, cmj_de: 16.7, cmj_iz: 11.9, asym_cmj: -28.74, broad: 2.33, broad_de: 2, broad_iz: 1.86, asym_br: -7, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/escapular" } }
         ];
 
-        const ELITE = { musc: 48, adip: 11, visc: 4, cmj: 45, broad: 2.5, yoyo: 21.0, asym: 0 };
-
-        const REHAB_LIBRARY = {
-            "isquiosural": ["Dead Bugs", "Puente glúteo unilateral", "Peso muerto rumano unilateral"],
-            "movilidad": ["Dorsiflexión con banda", "Obelisco", "Movilidad Toráxica", "Gato contento/enojado"],
-            "tobillo": ["Movilidad Articular Rodilla/Tobillo", "Dorsiflexión con carga"],
-            "pelvica": ["Bird-dog", "Puente almeja con banda", "Isométricos glúteo medio"],
-            "cadera": ["90-90 Rotación interna", "Ranita", "CURL Nórdico invertido"],
-            "escapular": ["Movilidad Escapular", "Halo Split KB", "Pájaros con poleas"]
+        const ELITE = { musc: 48, adip: 11, visc: 4, cmj: 45, broad: 2.5, yoyo: 21.0 };
+        const REHAB = {
+            "isquiosural": ["Dead Bugs", "Puente glúteo unilateral", "Flex lumbar"],
+            "movilidad": ["Dorsiflexión con banda", "Obelisco", "Movilidad Toráxica"],
+            "tobillo": ["Movilidad Articular", "Dorsiflexión con carga"],
+            "estabilidad": ["Bird-dog", "Puente almeja con banda", "Isométricos glúteo medio"],
+            "cadera": ["90-90 Rotación interna", "Ranita", "CURL Nórdico invertido"]
         };
 
-        let activeCharts = {};
+        let charts = {};
         let multiSelected = [1, 2, 3, 21];
 
         function setTab(view) {
             ['general', 'individual', 'compare'].forEach(v => {
                 document.getElementById('view-' + v).classList.add('hidden');
                 document.getElementById('tab-' + v).classList.remove('active', 'bg-blue-500', 'text-white');
-                document.getElementById('tab-' + v).classList.add('text-slate-500');
             });
             document.getElementById('view-' + view).classList.remove('hidden');
             document.getElementById('tab-' + view).classList.add('active', 'bg-blue-500', 'text-white');
@@ -216,8 +224,8 @@
             if(view === 'compare') renderMultiCompare();
         }
 
-        function getGroupStats(filterFn = null) {
-            const list = filterFn ? playersData.filter(filterFn) : playersData;
+        function getStats(filter = null) {
+            const list = filter ? playersData.filter(filter) : playersData;
             if(list.length === 0) return ELITE;
             return {
                 musc: list.reduce((a,b)=>a+b.musc,0)/list.length,
@@ -231,35 +239,35 @@
         }
 
         function renderGeneral() {
-            const stats = getGroupStats();
-            document.getElementById('stat-musc').innerText = stats.musc.toFixed(1) + '%';
-            document.getElementById('stat-adip').innerText = stats.adip.toFixed(1) + '%';
-            document.getElementById('stat-asym').innerText = stats.asym.toFixed(1) + '%';
+            const s = getStats();
+            document.getElementById('stat-musc').innerText = s.musc.toFixed(1) + '%';
+            document.getElementById('stat-adip').innerText = s.adip.toFixed(1) + '%';
+            document.getElementById('stat-asym').innerText = s.asym.toFixed(1) + '%';
             document.getElementById('stat-alerts').innerText = playersData.filter(p => Math.abs(p.asym_cmj) > 15 || p.adip > 20).length;
 
-            const positions = ["Cierre", "Ala", "Pivot", "Arquero"];
-            if(activeCharts.teamBench) activeCharts.teamBench.destroy();
-            activeCharts.teamBench = new Chart(document.getElementById('chart-team-benchmark'), {
+            const pos = ["Cierre", "Ala", "Pivot", "Arquero"];
+            if(charts.teamB) charts.teamB.destroy();
+            charts.teamB = new Chart(document.getElementById('chart-team-benchmark'), {
                 type: 'bar',
                 data: {
-                    labels: positions,
+                    labels: pos,
                     datasets: [
-                        { label: 'Puesto', data: positions.map(pos => getGroupStats(p=>p.pos===pos).cmj), backgroundColor: '#3b82f6', borderRadius: 6 },
-                        { label: 'Plantel', data: positions.map(()=>stats.cmj), type: 'line', borderColor: '#475569', borderDash:[5,5], pointRadius:0 },
-                        { label: 'Ideal Elite', data: positions.map(()=>ELITE.cmj), type: 'line', borderColor: '#22c55e', borderDash:[2,2], pointRadius:0 }
+                        { label: 'Puesto', data: pos.map(p => getStats(x=>x.pos===p).cmj), backgroundColor: '#3b82f6', borderRadius: 4 },
+                        { label: 'Plantel', data: pos.map(()=>s.cmj), type: 'line', borderColor: '#475569', borderDash:[5,5], pointRadius:0 },
+                        { label: 'Ideal Elite', data: pos.map(()=>ELITE.cmj), type: 'line', borderColor: '#22c55e', borderDash:[2,2], pointRadius:0 }
                     ]
                 },
-                options: { scales:{ y:{ grid:{color:'#1e293b'}, ticks:{color:'#64748b'} }, x:{ ticks:{color:'#cbd5e1'} } }, plugins:{ legend:{ display:false } } }
+                options: { scales:{ y:{ grid:{color:'#1e293b'} } } }
             });
 
-            if(activeCharts.teamImp) activeCharts.teamImp.destroy();
-            activeCharts.teamImp = new Chart(document.getElementById('chart-team-impedance'), {
+            if(charts.teamI) charts.teamI.destroy();
+            charts.teamI = new Chart(document.getElementById('chart-team-impedance'), {
                 type: 'radar',
                 data: {
-                    labels: ['Músculo', 'Grasa (Invertida)', 'Visceral (Invertida)'],
-                    datasets: [{ label:'Status Plantel', data:[stats.musc, 30-stats.adip, 12-stats.visc], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.1)' }]
+                    labels: ['Músculo', 'Grasa (Inv)', 'Visceral (Inv)'],
+                    datasets: [{ data:[s.musc, 30-s.adip, 12-s.visc], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,0.1)' }]
                 },
-                options: { scales:{ r:{ grid:{color:'#1e293b'}, pointLabels:{color:'#64748b'}, ticks:{display:false} } }, plugins:{ legend:{ display:false } } }
+                options: { scales:{ r:{ grid:{color:'#1e293b'}, pointLabels:{color:'#64748b'}, ticks:{display:false} } }, plugins:{legend:{display:false}} }
             });
         }
 
@@ -268,152 +276,124 @@
             const p = playersData.find(x => x.id === id);
             if(!p) return;
 
-            const teamStats = getGroupStats();
-            const posStats = getGroupStats(x => x.pos === p.pos);
+            const ts = getStats();
+            const ps = getStats(x => x.pos === p.pos);
 
-            document.getElementById('ind-avatar-text').innerText = p.name.charAt(0);
+            document.getElementById('ind-avatar').innerText = p.name.charAt(0);
             document.getElementById('ind-name').innerText = p.name;
-            document.getElementById('ind-pos-label').innerText = `${p.pos} • PIERNA ${p.leg.toUpperCase()}`;
+            document.getElementById('ind-pos').innerText = `${p.pos} • PIERNA ${p.leg.toUpperCase()}`;
             document.getElementById('ind-weight').innerText = p.weight + ' kg';
             document.getElementById('ind-height').innerText = p.height + ' m';
 
-            // Radar Comparativo 360
-            if(activeCharts.indRadar) activeCharts.indRadar.destroy();
-            activeCharts.indRadar = new Chart(document.getElementById('chart-ind-radar'), {
+            // Radar 360
+            if(charts.indR) charts.indR.destroy();
+            charts.indR = new Chart(document.getElementById('chart-ind-radar'), {
                 type: 'radar',
                 data: {
                     labels: ['Músculo', 'Grasa (Inv)', 'Yo-Yo', 'CMJ', 'Broad'],
                     datasets: [
                         { label: 'Jugador', data: [p.musc, 30-p.adip, p.y26*2, p.cmj, p.broad*20], borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.2)' },
-                        { label: 'Media Puesto', data: [posStats.musc, 30-posStats.adip, posStats.yoyo*2, posStats.cmj, posStats.broad*20], borderColor: '#8b5cf6', fill: false, borderDash:[2,2] },
+                        { label: 'Media Puesto', data: [ps.musc, 30-ps.adip, ps.yoyo*2, ps.cmj, ps.broad*20], borderColor: '#8b5cf6', fill: false, borderDash:[2,2] },
                         { label: 'Elite Futsal', data: [ELITE.musc, 30-ELITE.adip, ELITE.yoyo*2, ELITE.cmj, ELITE.broad*20], borderColor: '#22c55e', fill: false, borderDash:[5,5] }
                     ]
                 },
-                options: { scales:{ r:{ grid:{color:'#1e293b'}, pointLabels:{color:'#64748b', font:{size:10}}, ticks:{display:false} } } }
+                options: { scales:{ r:{ grid:{color:'#1e293b'}, pointLabels:{color:'#64748b'}, ticks:{display:false} } } }
             });
 
-            // YoYo + % Adiposidad (Correlación)
-            if(activeCharts.indYoyo) activeCharts.indYoyo.destroy();
-            activeCharts.indYoyo = new Chart(document.getElementById('chart-ind-yoyo'), {
+            // YoYo & Adip
+            if(charts.indY) charts.indY.destroy();
+            charts.indY = new Chart(document.getElementById('chart-ind-yoyo'), {
                 type: 'bar',
                 data: {
-                    labels: ['Yo-Yo 2025', 'Yo-Yo 2026', '% Adiposidad'],
-                    datasets: [{ 
-                        data: [p.y25, p.y26, p.adip], 
-                        backgroundColor: ['#475569', '#3b82f6', '#f59e0b'],
-                        borderRadius: 5
-                    }]
+                    labels: ['Yo-Yo 2025', 'Yo-Yo 2026', 'Adiposidad %'],
+                    datasets: [{ data: [p.y25, p.y26, p.adip], backgroundColor: ['#475569', '#3b82f6', '#f59e0b'], borderRadius: 4 }]
                 }
             });
 
-            // Potencia CMJ: Bipodal vs Der vs Izq
-            if(activeCharts.indCmj) activeCharts.indCmj.destroy();
-            activeCharts.indCmj = new Chart(document.getElementById('chart-ind-power-cmj'), {
+            // Power CMJ
+            if(charts.indPC) charts.indPC.destroy();
+            charts.indPC = new Chart(document.getElementById('chart-ind-power-cmj'), {
                 type: 'bar',
                 data: {
-                    labels: ['Bipodal', 'Der', 'Izq'],
-                    datasets: [{ label: 'CMJ (cm)', data: [p.cmj, p.cmj_de, p.cmj_iz], backgroundColor: ['#3b82f6', '#1e40af', '#1e40af'], borderRadius:4 }]
+                    labels: ['Bipodal', 'Derecha', 'Izquierda'],
+                    datasets: [{ label: 'Salto (cm)', data: [p.cmj, p.cmj_de, p.cmj_iz], backgroundColor: ['#3b82f6', '#1e40af', '#1e40af'], borderRadius:4 }]
                 }
             });
 
-            // Potencia Broad: Bipodal vs Der vs Izq
-            if(activeCharts.indBroad) activeCharts.indBroad.destroy();
-            activeCharts.indBroad = new Chart(document.getElementById('chart-ind-power-broad'), {
+            // Power Broad
+            if(charts.indPB) charts.indPB.destroy();
+            charts.indPB = new Chart(document.getElementById('chart-ind-power-broad'), {
                 type: 'bar',
                 data: {
-                    labels: ['Bipodal', 'Der', 'Izq'],
-                    datasets: [{ label: 'Broad (m)', data: [p.broad, p.broad_de, p.broad_iz], backgroundColor: ['#10b981', '#065f46', '#065f46'], borderRadius:4 }]
+                    labels: ['Bipodal', 'Derecha', 'Izquierda'],
+                    datasets: [{ label: 'Salto (m)', data: [p.broad, p.broad_de, p.broad_iz], backgroundColor: ['#10b981', '#065f46', '#065f46'], borderRadius:4 }]
                 }
             });
 
-            // Kinesio & Prescripción
-            const kinBox = document.getElementById('ind-kin-details');
-            const exBox = document.getElementById('ind-exercise-list');
-            kinBox.innerHTML = ''; exBox.innerHTML = '';
+            // Kinesio & Ejercicios
+            const kBox = document.getElementById('ind-kin');
+            const eBox = document.getElementById('ind-exercises');
+            kBox.innerHTML = ''; eBox.innerHTML = '';
             
-            const kinFindings = [
-                { l: 'Tobillo', v: p.kin.t }, { l: 'Cadera', v: p.kin.c }, { l: 'Unipodal', v: p.kin.u }, { l: 'Sentadilla', v: p.kin.s }
-            ];
+            const find = [{l:'Tobillo',v:p.kin.t},{l:'Cadera',v:p.kin.c},{l:'Unipodal',v:p.kin.u},{l:'Sentadilla',v:p.kin.s}];
+            const txt = (p.kin.t+p.kin.c+p.kin.u+p.kin.s).toLowerCase();
+            let exe = new Set();
 
-            const fullText = (p.kin.t + p.kin.c + p.kin.u + p.kin.s).toLowerCase();
-            let prescribed = new Set();
-
-            kinFindings.forEach(f => {
+            find.forEach(f => {
                 if(f.v) {
-                    kinBox.innerHTML += `<div class="p-3 bg-slate-900 rounded-xl border border-slate-800">
-                        <span class="text-[9px] font-black uppercase text-slate-500 block mb-1">${f.l}</span>
-                        <p class="text-xs italic">${f.v}</p>
-                    </div>`;
-                    
-                    Object.keys(REHAB_LIBRARY).forEach(key => {
-                        if(fullText.includes(key)) REHAB_LIBRARY[key].forEach(e => prescribed.add(e));
-                    });
+                    kBox.innerHTML += `<div class="p-3 bg-slate-900 rounded border border-slate-800"><span class="text-[9px] font-black uppercase text-slate-500 block">${f.l}</span><p class="text-xs italic">${f.v}</p></div>`;
+                    Object.keys(REHAB).forEach(k => { if(txt.includes(k)) REHAB[k].forEach(x => exe.add(x)); });
                 }
             });
 
-            if(prescribed.size > 0) {
-                prescribed.forEach(e => {
-                    exBox.innerHTML += `<div class="flex items-center gap-3 p-2.5 bg-blue-500/10 rounded-xl border border-blue-500/20">
-                        <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
-                        <span class="text-xs font-bold text-slate-300">${e}</span>
-                    </div>`;
-                });
-            } else {
-                exBox.innerHTML = `<p class="text-[10px] text-slate-500 uppercase font-black text-center p-10 italic">Sin prescripción específica</p>`;
-            }
+            if(exe.size > 0) exe.forEach(x => eBox.innerHTML += `<div class="p-2.5 bg-blue-500/10 rounded border border-blue-500/20 text-xs font-bold text-slate-300">• ${x}</div>`);
+            else eBox.innerHTML = `<p class="text-[10px] text-slate-500 text-center italic mt-4">Sin prescripción específica</p>`;
         }
 
         function renderMultiCompare() {
-            const players = multiSelected.map(id => playersData.find(p => p.id === id));
-            
-            if(activeCharts.multiRadar) activeCharts.multiRadar.destroy();
-            activeCharts.multiRadar = new Chart(document.getElementById('chart-multi-radar'), {
+            const p = multiSelected.map(id => playersData.find(x => x.id === id));
+            if(charts.mulR) charts.mulR.destroy();
+            charts.mulR = new Chart(document.getElementById('chart-multi-radar'), {
                 type: 'radar',
                 data: {
                     labels: ['Músculo', 'Grasa (Inv)', 'Yo-Yo', 'CMJ', 'Broad'],
-                    datasets: players.map((p, i) => ({
-                        label: p.name.split(',')[0],
-                        data: [p.musc, 30-p.adip, p.y26*2, p.cmj, p.broad*20],
-                        borderColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][i],
-                        borderWidth: 2
+                    datasets: p.map((x, i) => ({
+                        label: x.name.split(',')[0],
+                        data: [x.musc, 30-x.adip, x.y26*2, x.cmj, x.broad*20],
+                        borderColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6'][i]
                     }))
                 }
             });
 
-            if(activeCharts.multiPower) activeCharts.multiPower.destroy();
-            activeCharts.multiPower = new Chart(document.getElementById('chart-multi-power'), {
+            if(charts.mulP) charts.mulP.destroy();
+            charts.mulP = new Chart(document.getElementById('chart-multi-power'), {
                 type: 'bar',
                 data: {
-                    labels: players.map(p => p.name.split(',')[0]),
+                    labels: p.map(x => x.name.split(',')[0]),
                     datasets: [
-                        { label: 'CMJ Bipodal (cm)', data: players.map(p=>p.cmj), backgroundColor:'#3b82f6' },
-                        { label: 'Broad Jump (m)', data: players.map(p=>p.broad*20), backgroundColor:'#10b981' }
+                        { label: 'CMJ (cm)', data: p.map(x=>x.cmj), backgroundColor:'#3b82f6' },
+                        { label: 'Broad (x20)', data: p.map(x=>x.broad*20), backgroundColor:'#10b981' }
                     ]
                 }
             });
         }
 
         function init() {
-            const pSel = document.getElementById('player-select');
-            const cSels = document.getElementById('compare-selectors');
-            
-            playersData.forEach(p => {
-                const o = new Option(p.name, p.id);
-                pSel.add(o);
-            });
+            const s = document.getElementById('player-select');
+            const c = document.getElementById('compare-selectors');
+            playersData.forEach(p => s.add(new Option(p.name, p.id)));
 
             for(let i=0; i<4; i++) {
-                const s = document.createElement('select');
-                s.className = "bg-slate-900 border border-slate-700 rounded-xl p-3 text-[10px] font-black uppercase cursor-pointer";
+                const el = document.createElement('select');
+                el.className = "bg-slate-900 border border-slate-700 rounded-xl p-3 text-[10px] font-black uppercase";
                 playersData.forEach((p, idx) => {
                     const o = new Option(p.name, p.id);
-                    if(idx === multiSelected[i] - 1) o.selected = true;
-                    s.add(o);
+                    if(idx === multiSelected[i]-1) o.selected = true;
+                    el.add(o);
                 });
-                s.onchange = (e) => { multiSelected[i] = parseInt(e.target.value); renderMultiCompare(); };
-                cSels.appendChild(s);
+                el.onchange = (e) => { multiSelected[i] = parseInt(e.target.value); renderMultiCompare(); };
+                c.appendChild(el);
             }
-
             renderGeneral();
         }
 
