@@ -382,6 +382,461 @@ Silva, Thiago;20,5;2/6/2026;1;84,700;180,000;;;30,000;34,200;;;39,200;7,000;12,0
 Smokvina, Ignacio;20,9;06/02/26;1;69,800;173,000;;;28,500;33,400;;;36,000;9,000;10,000;;10,000;12,000;13,000;9,500;6,000;59,500;sin datos;50;9,500
 Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,000;7,000;;12,000;7,000;8,000;9,500;6,000;43,500;sin datos;50;-6,500`;
 
+        // DB In-Memory Prescripciones Dietarias
+        const PLANES_NUTRICIONALES = {
+            // ALBERTO
+            1: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300">
+                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                            <li>Licuado (200cc leche + 200g fruta + 10g azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 10g azúcar (o 200g yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce membrillo/batata) + 1 fruta mediana</li>
+                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo y claras revueltas + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded">200g carnes + 1 huevo + 250g vegetales C / fideos / pastas (1 plato playo) + 150g vegetal A + 250g vegetal B + 150g fruta + 10cc Aceite.</p>
+                        <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa al horno + ensalada de papa, tomate y huevo.</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Recomendaciones Generales</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>Preferir cereales integrales y cortes de carne magros (retirar grasa visible).</li>
+                            <li>Evitar frituras. Usar métodos de cocción al horno, vapor, plancha, parrilla o cacerola.</li>
+                            <li>Evitar consumo frecuente: manteca, crema, dulce de leche, facturas, tortas, bizcochos, helados, chocolates, alfajores, golosinas, gaseosas, snacks, hamburguesas, panchos, aderezos comerciales, fiambres, embutidos.</li>
+                            <li class="text-club-yellow font-bold">Límite: 3 huevos diarios.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // ARZANI
+            2: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                            <li>Licuado (200cc leche + 200g fruta + 10g azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 10g azúcar (o 200g yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce membrillo/batata) + 1 fruta mediana</li>
+                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo y claras revueltas + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes (mediana) + 1 huevo + 250g vegetales C / fideos / pastas + 150g vegetal A (1 mediano o 2 chicos) + 250g vegetal B (1 grande o 2 medianos) + 200g fruta + 15cc Aceite.</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Recomendaciones y Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>Cereales integrales y carnes magras sin grasa visible. Evitar frituras y ultraprocesados.</li>
+                            <li class="text-club-yellow font-bold">Límite: 3 huevos por día + claras si es necesario (2 o 3).</li>
+                            <li class="text-club-green font-bold">2 frutas grandes por día.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // BENITEZ
+            3: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) de pan integral + 30g de queso untable descremado + 30g de mermelada light</li>
+                            <li>200cc de yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco tipo port salud light)</li>
+                            <li>200cc de yogur descremado + 60g de granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g de carnes + 1 huevo + 300g de veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                        <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa + ensalada de papa y huevo + ensalada de zanahoria y tomate. Fruta.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                        <p class="text-xs text-slate-400 italic">Ejemplo: Pollo + papa + ensalada de tomate, remolacha y zanahoria. Fruta.</p>
+                    </div>
+                </div>
+            `,
+            // CABRERA
+            4: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 150cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable desc + 30g mermelada light</li>
+                            <li>150cc de yogur descremado + 1 tostado de queso (2 rodajas pan integral + 30g queso fresco light)</li>
+                            <li>150cc de yogur descremado + 60g granola + 100g fruta (chica)</li>
+                            <li>Café con 150cc leche desc + 2 rodajas pan integral + 1 huevo y claras revueltas + 150g fruta (mediana)</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes (mediano) + 1 huevo (solo en 1 comida o 2) + 250g veg C/fideos (1 plato playo) + 100g veg A (chico) + 250g veg B (mediano) + 150g fruta (si no se consume en des/mer) + Aceite 10cc</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones y Objetivos</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>Límite: 2 huevos por día en total + claras libres.</li>
+                            <li>2 frutas grandes por día.</li>
+                            <li class="text-club-yellow font-bold">Realizar 4 comidas completas. Priorizar almuerzo y merienda pre entrenamiento.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // DEL PALACIO
+            5: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (70g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable + 30g mermelada light</li>
+                            <li>200cc de yogur descremado + 1 tostado de queso (2 rodajas pan integral + 30g queso fresco light)</li>
+                            <li>200cc de yogur descremado + 60g granola + 100g fruta</li>
+                            <li>1 taza de café con 200cc leche desc + 2 rodajas pan integral + 1 huevo y 2 claras revueltas + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes (mediano) + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A (1 mediano o 2 chicos) + 250g veg B (1 grande o 2 medianos) + 150g fruta + Aceite 10cc</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Recomendaciones y Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>Límite: 2 huevos al día en total (agregar 2 claras si es necesario).</li>
+                            <li>2 frutas grandes por día o 3 frutas medianas.</li>
+                            <li>Evitar frituras, ultraprocesados, fiambres.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // FIGUEROA
+            6: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable + 30g mermelada light</li>
+                            <li>200cc de yogur descremado + 1 tostado de queso (2 rodajas pan integral + 30g queso fresco light)</li>
+                            <li>200cc de yogur descremado + 60g granola + 100g fruta (chica)</li>
+                            <li>Taza café con 200cc leche desc + 2 rodajas pan integral + 1 huevo y claras revueltas + 150g fruta (mediana)</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">100g carnes (chico-mediano) + 1 huevo (solo en 1 o en 2 comidas, total 2 por día + libres) + 250g veg C/fideos (1 plato playo) + 150g veg A (chico) + 250g veg B (mediano) + 150g fruta + Aceite 10cc</p>
+                    </div>
+                </div>
+            `,
+            // GONZI
+            9: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (70g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc leche descremada + 10g azúcar + 2 rodajas (50g) pan integral + 30g queso untable + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                            <li>200cc yogur + 2 o 3 vainillas + 1 fruta mediana</li>
+                            <li>1 taza café con 200cc leche descremada + 10g azúcar + 2 rodajas pan integral + 1 huevo revuelto + 2/3 claras + 1 fruta mediana</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A (mediana) + 250g veg B (grande) + 200g fruta (med/gde) + Aceite 10cc</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>3 huevos por día en total + claras si es necesario (2 o 3).</li>
+                            <li>2 frutas grandes o 3 medianas por día.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // GREGORIO
+            10: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso + 60g dulce membrillo/batata) + 1 fruta mediana</li>
+                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo y claras revueltas + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas (1 plato hondo) + 150g veg A (mediana) + 250g veg B (grande) + 200g fruta (med/gde) + Aceite 10cc</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li class="text-club-yellow font-bold">4 huevos por día en total + claras si es necesario.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // GUTIERREZ
+            11: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc leche descremada + 2 rodajas (50g) pan integral + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                            <li>200cc infusión con leche o yogur + 2 rodajas pan integral + 1 huevo y claras revueltas (o 2 huevos)</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 200g veg C/fideos/pastas + 150g veg A + 250g veg B + 150g fruta + Aceite 10cc</p>
+                        <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa mediana + puré de papa + ensalada zanahoria, remolacha, tomate. Fruta.</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>Un huevo por comida o los 2 en una sola. Elegir opción.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // BENQUET
+            21: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche o yogur + 60g vainillas (3) + 20g azúcar + 200g fruta</li>
+                            <li>Licuado (200 leche + 200 fruta + 20 azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 20g azúcar (o 200 yogur) + 75g pan (3) + 60g queso + 60g mermelada + 200g fruta</li>
+                            <li>300cc yogur + 3 puñados granola o 2 frutos secos + 200g fruta</li>
+                            <li>Mate + 3 tostadas pan integral + 1 huevo y claras + 200 fruta + 1 puñado frutos secos</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 1 huevo + 250g veg C/fideos/pastas + 200g veg A + 250g veg B + Aceite 15cc.</p>
+                        <p class="text-xs text-slate-400 italic">Nota: Si no consumió fruta en des/mer, agregar 1 fruta mediana.</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Objetivos del Mes</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li class="text-club-yellow font-bold">Organizar compras para poder llevar comida durante el día y evitar comer afuera.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // ALMIRON
+            22: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) de pan integral + 30g de queso untable descremado + 30g de mermelada light</li>
+                            <li>200cc de yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco tipo port salud light)</li>
+                            <li>200cc de yogur descremado + 60g de granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g de carnes + 1 huevo + 300g de veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                        <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa + ensalada de papa y huevo + ensalada de zanahoria y tomate. Fruta.</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                        <p class="text-xs text-slate-400 italic">Ejemplo: Pollo + papa + ensalada de tomate, remolacha y zanahoria. Fruta.</p>
+                    </div>
+                </div>
+            `,
+            // MACK
+            25: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
+            // PERVIU
+            23: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
+            // QUIROGA
+            14: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas de pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce compacto) + 1 fruta mediana</li>
+                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo + claras revuelto + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g de carnes + 1 huevo + 300g de veg C/fideos/pastas (1 plato hondo) + 150g veg A + 250g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>3 huevos por día en total + claras de ser necesario (2 a 3).</li>
+                            <li>2 frutas grandes por día o 3 medianas.</li>
+                            <li class="text-club-yellow font-bold">Queso y dulce: se puede usar como postre o en des/mer (60g de c/u).</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // RUMAK
+            16: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (70g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                            <li>1 taza de café con 200cc leche descremada + 10g azúcar + 2 rodajas pan integral + 1 huevo revuelto + 2-3 claras + 1 fruta mediana</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 1 huevo + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A + 250g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>3 huevos por día + claras de ser necesario (entre 2 a 3).</li>
+                            <li>2 frutas grandes por día o 3 medianas.</li>
+                            <li class="text-club-yellow font-bold">No es necesario desayunar si no estás acostumbrado, priorizar almuerzo y merienda.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // SILVA
+            17: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                            <li>1 taza de café con 200cc leche descremada + 2 rodajas pan integral + 1 huevo revuelto + claras</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 250g veg C/fideos/pastas (1 plato playo) + 200g veg A + 300g veg B + 1 fruta mediana + Aceite 10cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">100g carnes + 1 huevo + 250g veg C/fideos/pastas + 100g veg A + 250g veg B + 1 fruta mediana + Aceite 10cc</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>2 huevos por día + claras de ser necesario (2 o 3 claras).</li>
+                            <li>2 frutas grandes por día o 3 medianas.</li>
+                            <li class="text-club-yellow font-bold">Empezar de a poco a realizar las 4 comidas. Incorporar variedad de verduras.</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // SMOKVINA
+            18: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce compacto) + 1 fruta mediana</li>
+                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo + claras revuelto + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo (opcional) + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A + 250g veg B + 200g fruta + Aceite 10cc</p>
+                    </div>
+                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Suplementación y Aclaraciones</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>3 huevos por día en total + claras si es necesario (hasta 2 o 3).</li>
+                            <li>2 frutas grandes o 3 medianas por día.</li>
+                            <li class="text-club-yellow font-bold text-sm">Creatina: 1 medida de 5g / día (reemplazar proteína por monohidrato de creatina).</li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+            // STANIZZI
+            24: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `
+        };
+
         function parseNutri() {
             const lines = rawNutriCSV.split('\n');
             lines.forEach(line => {
@@ -767,38 +1222,15 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
         function init() {
             parseNutri();
             
-            let alberto = playersData.find(p => p.id === 1);
-            if(alberto && alberto.nutri) {
-                alberto.nutri.plan = `
-                    <div class="space-y-6">
-                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                            <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
-                            <ul class="list-disc pl-5 space-y-2 text-slate-300">
-                                <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
-                                <li>Licuado (200cc leche + 200g fruta + 10g azúcar) + 60g vainillas (3)</li>
-                                <li>200ml leche + 10g azúcar (o 200g yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
-                                <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
-                                <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce membrillo/batata) + 1 fruta mediana</li>
-                                <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo y claras revueltas + 1 fruta grande</li>
-                            </ul>
-                        </div>
-                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                            <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
-                            <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded">200g carnes + 1 huevo + 250g vegetales C / fideos / pastas (1 plato playo) + 150g vegetal A + 250g vegetal B + 150g fruta + 10cc Aceite.</p>
-                            <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa al horno + ensalada de papa, tomate y huevo.</p>
-                        </div>
-                        <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                            <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Recomendaciones Generales</h3>
-                            <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                                <li>Preferir cereales integrales y cortes de carne magros (retirar grasa visible).</li>
-                                <li>Evitar frituras. Usar métodos de cocción al horno, vapor, plancha, parrilla o cacerola.</li>
-                                <li>Evitar consumo frecuente: manteca, crema, dulce de leche, facturas, tortas, bizcochos, helados, chocolates, alfajores, golosinas, gaseosas, snacks, hamburguesas, panchos, aderezos comerciales, fiambres, embutidos.</li>
-                                <li class="text-club-yellow font-bold">Límite: 3 huevos diarios.</li>
-                            </ul>
-                        </div>
-                    </div>
-                `;
-            }
+            // Inyección in-memory de planes dietarios
+            playersData.forEach(p => {
+                if(p.nutri && PLANES_NUTRICIONALES[p.id]) {
+                    p.nutri.plan = PLANES_NUTRICIONALES[p.id];
+                } else if (!p.nutri && PLANES_NUTRICIONALES[p.id]) {
+                    // Si el jugador no tiene datos antropométricos pero sí plan
+                    p.nutri = { plan: PLANES_NUTRICIONALES[p.id] };
+                }
+            });
 
             initSelectors();
             renderIndividual();
