@@ -30,9 +30,9 @@
         .tooltip:hover .tooltiptext { visibility: visible; }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen relative">
 
-    <header class="bg-slate-900/95 border-b border-slate-800 p-4 sticky top-0 z-50 backdrop-blur-xl">
+    <header class="bg-slate-900/95 border-b border-slate-800 p-4 sticky top-0 z-40 backdrop-blur-xl">
         <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
             <div class="flex items-center gap-5">
                 <img src="EscudoLiber.png" alt="Escudo Libertadores" class="w-16 h-16 object-contain bg-white rounded-2xl p-1.5 shadow-2xl border border-slate-700" onerror="this.style.display='none'">
@@ -68,11 +68,24 @@
         </div>
     </header>
 
-    <main class="max-w-[1400px] mx-auto px-4 py-8">
+    <main class="max-w-[1400px] mx-auto px-4 py-8 relative">
+
+        <!-- MODAL NUTRICION -->
+        <div id="nutri-modal" class="hidden fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 transition-opacity">
+            <div class="glass-panel w-full max-w-3xl max-h-[85vh] overflow-y-auto custom-scrollbar p-8 relative border-emerald-500/30">
+                <button onclick="closeNutriModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-2xl transition-colors">&times;</button>
+                <div class="mb-6 border-b border-slate-800 pb-4">
+                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Prescripción Dietaria</p>
+                    <h2 class="text-2xl font-black uppercase text-club-green">Plan: <span id="modal-player-name" class="text-white"></span></h2>
+                </div>
+                <div id="modal-plan-content" class="text-sm text-slate-300 space-y-6 font-medium leading-relaxed">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+        </div>
 
         <!-- VISTA: FISICO INDIVIDUAL -->
         <section id="view-individual" class="space-y-6 animate-in fade-in duration-300">
-            <!-- (Contenido físico previo intacto y comprimido para espacio) -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <!-- Perfil Jugador -->
                 <div class="lg:col-span-3">
@@ -186,8 +199,8 @@
 
                         <div class="p-4 border border-emerald-500/30 rounded-xl bg-emerald-900/10 mt-6">
                             <h3 class="text-[10px] font-black uppercase text-emerald-500 mb-2">Plan Nutricional Activo</h3>
-                            <p class="text-[9px] text-slate-400 mb-4">Integración PDF dietario individual.</p>
-                            <button class="w-full bg-slate-800 border border-slate-700 hover:bg-emerald-600 text-[10px] font-black uppercase py-2.5 rounded-lg transition-colors text-slate-300 hover:text-white">Cargar / Ver Documento</button>
+                            <p class="text-[9px] text-slate-400 mb-4">Prescripción dietaria individual base.</p>
+                            <button onclick="openNutriModal()" class="w-full bg-slate-800 border border-slate-700 hover:bg-emerald-600 text-[10px] font-black uppercase py-2.5 rounded-lg transition-colors text-slate-300 hover:text-white cursor-pointer">Ver Plan Detallado</button>
                         </div>
                     </div>
                 </div>
@@ -730,8 +743,64 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             }
         }
 
+        function openNutriModal() {
+            const id = parseInt(document.getElementById('nutri-player-select').value);
+            const p = playersData.find(x => x.id === id);
+            if(!p) return;
+            
+            document.getElementById('modal-player-name').innerText = p.name;
+            const content = document.getElementById('modal-plan-content');
+            
+            if(p.nutri && p.nutri.plan) {
+                content.innerHTML = p.nutri.plan;
+            } else {
+                content.innerHTML = '<p class="text-red-500 font-bold p-4 bg-red-900/20 rounded border border-red-500/30">Sin prescripción dietaria cargada en el sistema para este jugador.</p>';
+            }
+            
+            document.getElementById('nutri-modal').classList.remove('hidden');
+        }
+
+        function closeNutriModal() {
+            document.getElementById('nutri-modal').classList.add('hidden');
+        }
+
         function init() {
             parseNutri();
+            
+            // Inyección de prescripción de muestra extráida de DOCX
+            let alberto = playersData.find(p => p.id === 1);
+            if(alberto && alberto.nutri) {
+                alberto.nutri.plan = \`
+                    <div class="space-y-6">
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                            <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-slate-300">
+                                <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                                <li>Licuado (200cc leche + 200g fruta + 10g azúcar) + 60g vainillas (3)</li>
+                                <li>200ml leche + 10g azúcar (o 200g yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                                <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                                <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce membrillo/batata) + 1 fruta mediana</li>
+                                <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo y claras revueltas + 1 fruta grande</li>
+                            </ul>
+                        </div>
+                        <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                            <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                            <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded">200g carnes + 1 huevo + 250g vegetales C / fideos / pastas (1 plato playo) + 150g vegetal A + 250g vegetal B + 150g fruta + 10cc Aceite.</p>
+                            <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa al horno + ensalada de papa, tomate y huevo.</p>
+                        </div>
+                        <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
+                            <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Recomendaciones Generales</h3>
+                            <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                                <li>Preferir cereales integrales y cortes de carne magros (retirar grasa visible).</li>
+                                <li>Evitar frituras. Usar métodos de cocción al horno, vapor, plancha, parrilla o cacerola.</li>
+                                <li>Evitar consumo frecuente: manteca, crema, dulce de leche, facturas, tortas, bizcochos, helados, chocolates, alfajores, golosinas, gaseosas, snacks, hamburguesas, panchos, aderezos comerciales, fiambres, embutidos.</li>
+                                <li class="text-club-yellow font-bold">Límite: 3 huevos diarios.</li>
+                            </ul>
+                        </div>
+                    </div>
+                \`;
+            }
+
             initSelectors();
             renderIndividual();
             renderGeneral();
