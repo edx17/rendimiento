@@ -834,6 +834,63 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                         <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
                     </div>
                 </div>
+            `,
+            // FIOCCHI
+            7: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (70g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
+            // GARDIOL
+            8: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 3 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 60g granola + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 80g granola + 150g fruta</li>
+                            <li>200cc yogur descremado + 80g granola + 1 rodaja de pan integral + 1 huevo revuelto (+ claras)</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 150g veg A + 250g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
+            // RECHE
+            15: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (75g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 3 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 60g granola + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 80g granola + 150g fruta</li>
+                            <li>200cc yogur descremado + 80g granola + 1 rodaja de pan integral + 1 huevo revuelto (+ claras)</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 1 huevo + 300g veg C/fideos/pastas + 200g veg A + 250g veg B + 150g fruta + Aceite 10cc</p>
+                    </div>
+                </div>
             `
         };
 
@@ -1158,6 +1215,16 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
         }
 
         function renderCompare() {
+            const s1 = document.getElementById('comp-1').value;
+            const s2 = document.getElementById('comp-2').value;
+            const s3 = document.getElementById('comp-3').value;
+            const s4 = document.getElementById('comp-4').value;
+            
+            if (s1) compSel[0] = parseInt(s1);
+            if (s2) compSel[1] = parseInt(s2);
+            if (s3) compSel[2] = parseInt(s3);
+            if (s4) compSel[3] = parseInt(s4);
+
             const p = compSel.map(id => playersData.find(x => x.id === id)).filter(Boolean);
             const cols = ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6'];
 
