@@ -11,7 +11,7 @@
         body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
         .glass-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.25rem; }
         .btn-nav { transition: all 0.2s ease; cursor: pointer; }
-        .btn-nav.active { background-color: #10b981; color: #020617; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); } /* Verde Club */
+        .btn-nav.active { background-color: #10b981; color: #020617; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); } 
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         canvas { max-height: 350px; width: 100% !important; }
@@ -145,7 +145,7 @@
 
                     <!-- Fila 2: Potencia -->
                     <div class="glass-panel p-6">
-                        <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-100">Evaluación de Potencia y Asimetrías</h3>
+                        <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-100">Evaluación de Potencia y Diferencias</h3>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <!-- Datos Potencia -->
                             <div>
@@ -156,6 +156,7 @@
                                             <th class="py-2 text-center">Bipodal</th>
                                             <th class="py-2 text-center">Der</th>
                                             <th class="py-2 text-center">Izq</th>
+                                            <th class="py-2 text-center">Diferencia</th>
                                             <th class="py-2 text-right">Asimetría</th>
                                         </tr>
                                     </thead>
@@ -165,6 +166,7 @@
                                             <td class="py-3 text-center text-club-yellow" id="pot-cmj">--</td>
                                             <td class="py-3 text-center" id="pot-cmjd">--</td>
                                             <td class="py-3 text-center" id="pot-cmji">--</td>
+                                            <td class="py-3 text-center text-slate-400" id="pot-difc">--</td>
                                             <td class="py-3 text-right" id="pot-asymc">--</td>
                                         </tr>
                                         <tr class="border-b border-slate-800/50">
@@ -172,12 +174,13 @@
                                             <td class="py-3 text-center text-club-yellow" id="pot-broad">--</td>
                                             <td class="py-3 text-center" id="pot-broadd">--</td>
                                             <td class="py-3 text-center" id="pot-broadi">--</td>
+                                            <td class="py-3 text-center text-slate-400" id="pot-difb">--</td>
                                             <td class="py-3 text-right" id="pot-asymb">--</td>
                                         </tr>
                                         <tr>
                                             <td class="py-3 text-[10px] text-slate-400 uppercase">ABK</td>
                                             <td class="py-3 text-center text-club-green" id="pot-abk">--</td>
-                                            <td colspan="3"></td>
+                                            <td colspan="4"></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -325,7 +328,6 @@
     </main>
 
     <script>
-        // BASE DE DATOS INTACTA (Campos añadidos para ABK, Ed Met, Date según archivo CSV de origen para no romper la UI)
         const playersData = [
             { id: 1, name: "Alberto, Joaquin", pos: "Cierre", leg: "Derecho", date: "2026-02-07", weight: 68.3, height: 1.77, musc: 45.2, adip: 11.8, visc: 4, imc: 21.8, ed_met: 21, y25: 20.0, y26: 20.8, cmj: 44.1, abk: 59.3, cmj_de: 25.5, cmj_iz: 24.6, asym_cmj: -3.52, broad: 2.58, broad_de: 2.13, broad_iz: 2.2, asym_br: 3.28, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "poca estabilidad", s: "Buena profundidad y movilidad" } },
             { id: 2, name: "Arzani, Ramiro", pos: "Arquero", leg: "Izquierda", date: "2026-02-07", weight: 75.8, height: 1.77, musc: 41.8, adip: 17.3, visc: 6, imc: 24.5, ed_met: 34, y25: 18.0, y26: 18.1, cmj: 45.3, abk: 52.8, cmj_de: 28.2, cmj_iz: 24.6, asym_cmj: -12.77, broad: 2.46, broad_de: 2.35, broad_iz: 2.1, asym_br: -10.64, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "mejorar movilidad tobillo" } },
@@ -407,7 +409,6 @@
             let criticos = playersData.filter(p => Math.abs(p.asym_cmj) > 15 || p.adip > 18);
             document.getElementById('stat-alerts').innerText = criticos.length;
 
-            // Listados Top
             let tCmj = [...playersData].sort((a,b)=>b.cmj - a.cmj).slice(0,3);
             document.getElementById('top-cmj').innerHTML = tCmj.map(p => `<div class="flex justify-between text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-club-yellow">${p.cmj} cm</span></div>`).join('');
             
@@ -419,7 +420,6 @@
 
             document.getElementById('critical-list').innerHTML = criticos.map(p => `<div class="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs font-bold text-red-400">${p.name.split(',')[0]} (${Math.abs(p.asym_cmj)>15?'Asim '+p.asym_cmj+'%':'Adip '+p.adip+'%'})</div>`).join('');
 
-            // Gráficos Equipo
             const pos = ["Cierre", "Ala", "Pivot", "Arquero"];
             if(charts.tPos) charts.tPos.destroy();
             charts.tPos = new Chart(document.getElementById('chart-team-pos'), {
@@ -446,13 +446,11 @@
             document.getElementById('ind-name').innerText = names[1] ? names[1].trim() : '';
             document.getElementById('ind-pos').innerText = p.pos;
             
-            // Ficha
             document.getElementById('ind-date').innerText = p.date.split('-').reverse().join('-');
             document.getElementById('ind-leg').innerText = p.leg;
             document.getElementById('ind-weight').innerText = p.weight ? p.weight + ' kg' : '--';
             document.getElementById('ind-height').innerText = p.height ? (p.height * 100).toFixed(0) + ' cm' : '--';
 
-            // Bipedancia
             document.getElementById('ind-musc').innerText = p.musc ? p.musc + '%' : '--';
             document.getElementById('ind-musc').style.color = getColorSemaforo(p.musc, 'musc');
             document.getElementById('ind-adip').innerText = p.adip ? p.adip + '%' : '--';
@@ -476,7 +474,6 @@
                 options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } } }
             });
 
-            // Yo-Yo
             let dif = (p.y26 - p.y25).toFixed(1);
             document.getElementById('ind-y25').innerText = p.y25 || '--';
             document.getElementById('ind-y26').innerText = p.y26 || '--';
@@ -497,16 +494,17 @@
                 options: { maintainAspectRatio: false, scales:{ y:{ min: 15, grid:{color:'#1e293b'} } } }
             });
 
-            // Potencia Table & Chart
             document.getElementById('pot-cmj').innerText = p.cmj || '--';
             document.getElementById('pot-cmjd').innerText = p.cmj_de || '--';
             document.getElementById('pot-cmji').innerText = p.cmj_iz || '--';
+            document.getElementById('pot-difc').innerText = (p.cmj_de && p.cmj_iz) ? (p.cmj_de - p.cmj_iz).toFixed(1) : '--';
             document.getElementById('pot-asymc').innerText = p.asym_cmj ? p.asym_cmj + '%' : '--';
             document.getElementById('pot-asymc').style.color = getColorSemaforo(p.asym_cmj, 'asym');
 
             document.getElementById('pot-broad').innerText = p.broad || '--';
             document.getElementById('pot-broadd').innerText = p.broad_de || '--';
             document.getElementById('pot-broadi').innerText = p.broad_iz || '--';
+            document.getElementById('pot-difb').innerText = (p.broad_de && p.broad_iz) ? (p.broad_de - p.broad_iz).toFixed(2) : '--';
             document.getElementById('pot-asymb').innerText = p.asym_br ? p.asym_br + '%' : '--';
             document.getElementById('pot-asymb').style.color = getColorSemaforo(p.asym_br, 'asym');
             
@@ -525,7 +523,6 @@
                 options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } } }
             });
 
-            // Radar 360
             let pMusc = getAvg(playersData.filter(x=>x.pos===p.pos), 'musc');
             let pCmj = getAvg(playersData.filter(x=>x.pos===p.pos), 'cmj');
             let pYoyo = getAvg(playersData.filter(x=>x.pos===p.pos), 'y26');
@@ -544,7 +541,6 @@
                 options: { scales:{ r:{ grid:{color:'#1e293b'}, pointLabels:{color:'#64748b'}, ticks:{display:false} } } }
             });
 
-            // Kinesio & Emojis
             document.getElementById('kin-tob').innerText = p.kin.t || 'Sin registro';
             document.getElementById('kin-cad').innerText = p.kin.c || 'Sin registro';
             document.getElementById('kin-uni').innerText = p.kin.u || 'Sin registro';
@@ -631,7 +627,6 @@
                 el.onchange = (e) => { compSel[i-1] = parseInt(e.target.value); renderMultiCompare(); };
             }
 
-            // Defaults to individual view first
             renderIndividual();
             renderGeneral();
             renderMultiCompare();
