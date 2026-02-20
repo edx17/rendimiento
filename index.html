@@ -20,6 +20,16 @@
         .text-club-green { color: #10b981; }
         .bg-club-yellow { background-color: #f59e0b; }
         .bg-club-green { background-color: #10b981; }
+        
+        /* Tooltip */
+        .tooltip { position: relative; display: inline-block; }
+        .tooltip .tooltiptext {
+            visibility: hidden; width: 320px; background-color: #1e293b; color: #cbd5e1;
+            text-align: left; border-radius: 6px; padding: 10px; position: absolute; z-index: 100;
+            top: 125%; left: 50%; margin-left: -160px; font-size: 0.7rem; font-weight: normal;
+            border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+        }
+        .tooltip:hover .tooltiptext { visibility: visible; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -27,17 +37,35 @@
     <header class="bg-slate-900/95 border-b border-slate-800 p-4 sticky top-0 z-50 backdrop-blur-xl">
         <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
             <div class="flex items-center gap-5">
-                <img src="EscudoLiber.png" alt="Escudo Libertadores" class="w-16 h-16 object-contain bg-white rounded-2xl p-1.5 shadow-2xl border border-slate-700">
+                <img src="EscudoLiber.png" alt="Escudo Libertadores" class="w-16 h-16 object-contain bg-white rounded-2xl p-1.5 shadow-2xl border border-slate-700" onerror="this.style.display='none'">
                 <div>
                     <h1 class="text-2xl font-black tracking-tighter uppercase leading-none italic text-club-green">Libertadores <span class="text-club-yellow">PRO-PERFORMANCE</span></h1>
                     <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Ciencia Aplicada • 1ra AFA</p>
                 </div>
             </div>
-            <nav class="flex p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800">
-                <button onclick="setTab('individual')" id="tab-individual" class="btn-nav active px-6 py-2.5 rounded-xl text-xs font-black uppercase">INDIVIDUAL</button>
-                <button onclick="setTab('general')" id="tab-general" class="btn-nav px-6 py-2.5 rounded-xl text-xs font-black uppercase text-slate-400">EQUIPO</button>
-                <button onclick="setTab('compare')" id="tab-compare" class="btn-nav px-6 py-2.5 rounded-xl text-xs font-black uppercase text-slate-400">STAFF-COMPARE</button>
-            </nav>
+            
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-slate-800">
+                    <label for="csv-upload" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-xs font-black uppercase text-slate-300 px-4 py-2 rounded-lg transition-colors">
+                        Subir CSV
+                    </label>
+                    <input type="file" id="csv-upload" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
+                    <div class="tooltip cursor-help bg-slate-800 text-slate-400 w-6 h-6 flex items-center justify-center rounded-full text-xs font-black border border-slate-700">
+                        !
+                        <span class="tooltiptext uppercase tracking-wider leading-relaxed">
+                            <strong class="text-club-yellow">Formato estricto (Separador ';')</strong><br><br>
+                            Columnas:<br>
+                            Nombre;Puesto;Pierna;Fecha(YYYY-MM-DD);Peso;Talla;%Musc;%Adip;Visc;IMC;EdMet;Yoyo25;Yoyo26;CMJ;ABK;CMJ_Der;CMJ_Izq;Broad;Broad_Der;Broad_Izq;K_Tobillos;K_Cadera;K_Unipodal;K_Sentadilla
+                        </span>
+                    </div>
+                </div>
+
+                <nav class="flex p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800">
+                    <button onclick="setTab('individual')" id="tab-individual" class="btn-nav active px-6 py-2 rounded-xl text-xs font-black uppercase">INDIVIDUAL</button>
+                    <button onclick="setTab('general')" id="tab-general" class="btn-nav px-6 py-2 rounded-xl text-xs font-black uppercase text-slate-400">EQUIPO</button>
+                    <button onclick="setTab('compare')" id="tab-compare" class="btn-nav px-6 py-2 rounded-xl text-xs font-black uppercase text-slate-400">STAFF-COMPARE</button>
+                </nav>
+            </div>
         </div>
     </header>
 
@@ -47,7 +75,7 @@
         <section id="view-individual" class="space-y-6 animate-in fade-in duration-300">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Columna Izquierda: Perfil Jugador -->
+                <!-- Perfil Jugador -->
                 <div class="lg:col-span-3">
                     <div class="glass-panel p-6 sticky top-28">
                         <select id="player-select" onchange="renderIndividual()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-black focus:ring-2 focus:ring-emerald-500 appearance-none mb-6 cursor-pointer text-club-yellow"></select>
@@ -70,49 +98,70 @@
                                 <span class="text-xs font-black text-slate-200" id="ind-leg">--</span>
                             </div>
                             <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg">
-                                <span class="text-[10px] text-slate-500 font-bold uppercase">Peso</span>
+                                <span class="text-[10px] text-slate-500 font-bold uppercase">Peso (kg)</span>
                                 <span class="text-xs font-black text-slate-200" id="ind-weight">--</span>
                             </div>
                             <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg">
-                                <span class="text-[10px] text-slate-500 font-bold uppercase">Talla</span>
+                                <span class="text-[10px] text-slate-500 font-bold uppercase">Talla (cm)</span>
                                 <span class="text-xs font-black text-slate-200" id="ind-height">--</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Columna Derecha: Datos -->
+                <!-- Datos -->
                 <div class="lg:col-span-9 space-y-6">
                     
                     <!-- Fila 1: Bipedancia y Yo-Yo -->
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         
                         <!-- Bipedancia -->
-                        <div class="glass-panel p-6">
+                        <div class="glass-panel p-6 flex flex-col">
                             <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-club-yellow">Composición Corporal (Bipedancia)</h3>
-                            <div class="grid grid-cols-5 gap-2 mb-6">
-                                <div class="metric-card p-2 text-center rounded-lg">
-                                    <span class="text-[8px] text-slate-500 font-black uppercase block">Músculo</span>
-                                    <span class="text-sm font-black text-slate-200" id="ind-musc">--</span>
-                                </div>
-                                <div class="metric-card p-2 text-center rounded-lg">
-                                    <span class="text-[8px] text-slate-500 font-black uppercase block">Adiposidad</span>
-                                    <span class="text-sm font-black text-slate-200" id="ind-adip">--</span>
-                                </div>
-                                <div class="metric-card p-2 text-center rounded-lg">
-                                    <span class="text-[8px] text-slate-500 font-black uppercase block">Visceral</span>
-                                    <span class="text-sm font-black text-slate-200" id="ind-visc">--</span>
-                                </div>
-                                <div class="metric-card p-2 text-center rounded-lg">
-                                    <span class="text-[8px] text-slate-500 font-black uppercase block">IMC</span>
-                                    <span class="text-sm font-black text-slate-200" id="ind-imc">--</span>
-                                </div>
-                                <div class="metric-card p-2 text-center rounded-lg border-b-2 border-b-club-yellow">
-                                    <span class="text-[8px] text-slate-500 font-black uppercase block">Ed.Met.</span>
-                                    <span class="text-sm font-black text-club-yellow" id="ind-edmet">--</span>
-                                </div>
-                            </div>
-                            <div class="h-48 relative"><canvas id="chart-ind-comp"></canvas></div>
+                            
+                            <table class="w-full text-left text-xs mb-4">
+                                <thead>
+                                    <tr class="text-[9px] uppercase text-slate-500 border-b border-slate-800">
+                                        <th class="py-2">Métrica</th>
+                                        <th class="py-2 text-center text-club-yellow">Jugador</th>
+                                        <th class="py-2 text-center">Equipo</th>
+                                        <th class="py-2 text-center text-emerald-500">Elite</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="font-black text-slate-200">
+                                    <tr class="border-b border-slate-800/50">
+                                        <td class="py-2 text-[10px] text-slate-400 uppercase">Músculo %</td>
+                                        <td class="py-2 text-center" id="ind-musc">--</td>
+                                        <td class="py-2 text-center text-slate-400" id="ind-eq-musc">--</td>
+                                        <td class="py-2 text-center text-emerald-500">48.0</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-800/50">
+                                        <td class="py-2 text-[10px] text-slate-400 uppercase">Adiposidad %</td>
+                                        <td class="py-2 text-center" id="ind-adip">--</td>
+                                        <td class="py-2 text-center text-slate-400" id="ind-eq-adip">--</td>
+                                        <td class="py-2 text-center text-emerald-500">11.0</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-800/50">
+                                        <td class="py-2 text-[10px] text-slate-400 uppercase">Visceral</td>
+                                        <td class="py-2 text-center" id="ind-visc">--</td>
+                                        <td class="py-2 text-center text-slate-400" id="ind-eq-visc">--</td>
+                                        <td class="py-2 text-center text-emerald-500">4.0</td>
+                                    </tr>
+                                    <tr class="border-b border-slate-800/50">
+                                        <td class="py-2 text-[10px] text-slate-400 uppercase">IMC</td>
+                                        <td class="py-2 text-center" id="ind-imc">--</td>
+                                        <td class="py-2 text-center text-slate-400" id="ind-eq-imc">--</td>
+                                        <td class="py-2 text-center text-emerald-500">23.0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="py-2 text-[10px] text-slate-400 uppercase">Edad Met.</td>
+                                        <td class="py-2 text-center text-club-yellow" id="ind-edmet">--</td>
+                                        <td class="py-2 text-center text-slate-400" id="ind-eq-edmet">--</td>
+                                        <td class="py-2 text-center text-emerald-500">20.0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div class="flex-grow relative min-h-[120px]"><canvas id="chart-ind-comp"></canvas></div>
                         </div>
 
                         <!-- Yo-Yo -->
@@ -124,40 +173,45 @@
                                     <span class="text-[10px] font-black" id="ind-yoyo-dif">--</span>
                                 </div>
                             </div>
-                            <div class="grid grid-cols-3 gap-2 mb-4">
+                            <div class="grid grid-cols-4 gap-2 mb-4">
                                 <div class="metric-card p-2 text-center rounded-lg">
                                     <span class="text-[8px] text-slate-500 font-black uppercase block">Año 2025</span>
                                     <span class="text-sm font-black text-slate-300" id="ind-y25">--</span>
                                 </div>
                                 <div class="metric-card p-2 text-center rounded-lg border-b-2 border-b-club-green bg-slate-900">
                                     <span class="text-[8px] text-club-green font-black uppercase block">Actual 2026</span>
-                                    <span class="text-lg font-black text-white" id="ind-y26">--</span>
+                                    <span class="text-sm font-black text-white" id="ind-y26">--</span>
+                                </div>
+                                <div class="metric-card p-2 text-center rounded-lg">
+                                    <span class="text-[8px] text-slate-400 font-black uppercase block">Prom. Equipo</span>
+                                    <span class="text-sm font-black text-slate-300" id="ind-eq-yoyo">--</span>
                                 </div>
                                 <div class="metric-card p-2 text-center rounded-lg border border-emerald-500/30">
                                     <span class="text-[8px] text-emerald-500 font-black uppercase block">Ideal Elite</span>
                                     <span class="text-sm font-black text-emerald-400">21.0</span>
                                 </div>
                             </div>
-                            <div class="flex-grow relative"><canvas id="chart-ind-yoyo"></canvas></div>
+                            <div class="flex-grow relative min-h-[150px]"><canvas id="chart-ind-yoyo"></canvas></div>
                         </div>
 
                     </div>
 
                     <!-- Fila 2: Potencia -->
                     <div class="glass-panel p-6">
-                        <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-100">Evaluación de Potencia y Diferencias</h3>
+                        <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-100">Evaluación de Potencia, Asimetrías y Comparativa</h3>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                             <!-- Datos Potencia -->
                             <div>
-                                <table class="w-full text-left text-sm">
+                                <table class="w-full text-left text-xs">
                                     <thead>
                                         <tr class="text-[9px] uppercase text-slate-500 border-b border-slate-800">
                                             <th class="py-2">Métrica</th>
-                                            <th class="py-2 text-center">Bipodal</th>
+                                            <th class="py-2 text-center text-club-yellow">Total</th>
                                             <th class="py-2 text-center">Der</th>
                                             <th class="py-2 text-center">Izq</th>
-                                            <th class="py-2 text-center">Diferencia</th>
-                                            <th class="py-2 text-right">Asimetría</th>
+                                            <th class="py-2 text-center">DIF(Asim%)</th>
+                                            <th class="py-2 text-center text-slate-400">Equipo</th>
+                                            <th class="py-2 text-right text-emerald-500">Elite</th>
                                         </tr>
                                     </thead>
                                     <tbody class="font-black text-slate-200">
@@ -166,27 +220,33 @@
                                             <td class="py-3 text-center text-club-yellow" id="pot-cmj">--</td>
                                             <td class="py-3 text-center" id="pot-cmjd">--</td>
                                             <td class="py-3 text-center" id="pot-cmji">--</td>
-                                            <td class="py-3 text-center text-slate-400" id="pot-difc">--</td>
-                                            <td class="py-3 text-right" id="pot-asymc">--</td>
+                                            <td class="py-3 text-center"><span id="pot-difc">--</span> (<span id="pot-asymc">--</span>)</td>
+                                            <td class="py-3 text-center text-slate-400" id="pot-eq-cmj">--</td>
+                                            <td class="py-3 text-right text-emerald-500">45.0</td>
                                         </tr>
                                         <tr class="border-b border-slate-800/50">
                                             <td class="py-3 text-[10px] text-slate-400 uppercase">Broad (m)</td>
                                             <td class="py-3 text-center text-club-yellow" id="pot-broad">--</td>
                                             <td class="py-3 text-center" id="pot-broadd">--</td>
                                             <td class="py-3 text-center" id="pot-broadi">--</td>
-                                            <td class="py-3 text-center text-slate-400" id="pot-difb">--</td>
-                                            <td class="py-3 text-right" id="pot-asymb">--</td>
+                                            <td class="py-3 text-center"><span id="pot-difb">--</span> (<span id="pot-asymb">--</span>)</td>
+                                            <td class="py-3 text-center text-slate-400" id="pot-eq-broad">--</td>
+                                            <td class="py-3 text-right text-emerald-500">2.50</td>
                                         </tr>
                                         <tr>
                                             <td class="py-3 text-[10px] text-slate-400 uppercase">ABK</td>
-                                            <td class="py-3 text-center text-club-green" id="pot-abk">--</td>
-                                            <td colspan="4"></td>
+                                            <td class="py-3 text-center text-club-yellow" id="pot-abk">--</td>
+                                            <td colspan="3" class="text-center text-slate-600 font-normal">N/A Unipodal</td>
+                                            <td class="py-3 text-center text-slate-400" id="pot-eq-abk">--</td>
+                                            <td class="py-3 text-right text-emerald-500">60.0</td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                             <!-- Gráfico Potencia -->
-                            <div class="relative min-h-[150px]"><canvas id="chart-ind-power"></canvas></div>
+                            <div class="relative min-h-[150px] flex items-center justify-center">
+                                <canvas id="chart-ind-power"></canvas>
+                            </div>
                         </div>
                     </div>
 
@@ -195,26 +255,26 @@
                         <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-purple-400">Evaluación Kinésica y Correctivos</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="space-y-3">
-                                <div class="p-3 bg-slate-900 rounded-lg">
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
                                     <div class="flex items-center gap-2 mb-1"><span class="text-lg">🦶</span> <span class="text-[10px] font-black uppercase text-slate-500">Tobillos</span></div>
                                     <p class="text-xs font-bold text-slate-300 ml-7" id="kin-tob">--</p>
                                 </div>
-                                <div class="p-3 bg-slate-900 rounded-lg">
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
                                     <div class="flex items-center gap-2 mb-1"><span class="text-lg">🦴</span> <span class="text-[10px] font-black uppercase text-slate-500">Cadera (Jurdan)</span></div>
                                     <p class="text-xs font-bold text-slate-300 ml-7" id="kin-cad">--</p>
                                 </div>
-                                <div class="p-3 bg-slate-900 rounded-lg">
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
                                     <div class="flex items-center gap-2 mb-1"><span class="text-lg">⚖️</span> <span class="text-[10px] font-black uppercase text-slate-500">Unipodal</span></div>
                                     <p class="text-xs font-bold text-slate-300 ml-7" id="kin-uni">--</p>
                                 </div>
-                                <div class="p-3 bg-slate-900 rounded-lg">
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
                                     <div class="flex items-center gap-2 mb-1"><span class="text-lg">🏋️</span> <span class="text-[10px] font-black uppercase text-slate-500">Sentadilla</span></div>
                                     <p class="text-xs font-bold text-slate-300 ml-7" id="kin-sen">--</p>
                                 </div>
                             </div>
                             <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
                                 <h4 class="text-[10px] font-black uppercase text-purple-400 mb-3">Prescripción de Ejercicios (Warm-Up)</h4>
-                                <div class="space-y-2" id="ind-exercises">
+                                <div class="space-y-2 overflow-y-auto max-h-[200px] custom-scrollbar pr-2" id="ind-exercises">
                                     <!-- Dynamic -->
                                 </div>
                             </div>
@@ -254,7 +314,7 @@
                     <h4 class="text-[10px] font-black text-slate-400 uppercase">Jugadores Críticos</h4>
                     <div class="flex items-end gap-2 mt-2">
                         <span class="text-3xl font-black text-red-500" id="stat-alerts">--</span>
-                        <span class="text-xs font-bold text-slate-500 mb-1">Riesgo / Déficit</span>
+                        <span class="text-xs font-bold text-slate-500 mb-1">Asim>15 / Adip>18</span>
                     </div>
                 </div>
             </div>
@@ -328,12 +388,12 @@
     </main>
 
     <script>
-        const playersData = [
+        // Data Base inicial (sobreescribible por CSV)
+        let playersData = [
             { id: 1, name: "Alberto, Joaquin", pos: "Cierre", leg: "Derecho", date: "2026-02-07", weight: 68.3, height: 1.77, musc: 45.2, adip: 11.8, visc: 4, imc: 21.8, ed_met: 21, y25: 20.0, y26: 20.8, cmj: 44.1, abk: 59.3, cmj_de: 25.5, cmj_iz: 24.6, asym_cmj: -3.52, broad: 2.58, broad_de: 2.13, broad_iz: 2.2, asym_br: 3.28, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "poca estabilidad", s: "Buena profundidad y movilidad" } },
             { id: 2, name: "Arzani, Ramiro", pos: "Arquero", leg: "Izquierda", date: "2026-02-07", weight: 75.8, height: 1.77, musc: 41.8, adip: 17.3, visc: 6, imc: 24.5, ed_met: 34, y25: 18.0, y26: 18.1, cmj: 45.3, abk: 52.8, cmj_de: 28.2, cmj_iz: 24.6, asym_cmj: -12.77, broad: 2.46, broad_de: 2.35, broad_iz: 2.1, asym_br: -10.64, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "mejorar movilidad tobillo" } },
             { id: 3, name: "Benitez, Marcos", pos: "Ala", leg: "Derecho", date: "2026-02-07", weight: 60.8, height: 1.6, musc: 41.5, adip: 19.7, visc: 7, imc: 23.8, ed_met: 19, y25: 18.4, y26: 21.3, cmj: 44.1, abk: 46.5, cmj_de: 22, cmj_iz: 23.8, asym_cmj: 8.18, broad: 2.25, broad_de: 2.04, broad_iz: 2.1, asym_br: 2.94, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "" } },
             { id: 4, name: "Cabrera, Agustín", pos: "Arquero", leg: "Derecho", date: "2026-02-07", weight: 72.4, height: 1.74, musc: 43.8, adip: 14.8, visc: 5, imc: 23.9, ed_met: 26, y25: 18.0, y26: 18.0, cmj: 36.3, abk: 42.9, cmj_de: 19.6, cmj_iz: 22.9, asym_cmj: 16.84, broad: 2.34, broad_de: 2.03, broad_iz: 2.01, asym_br: -0.98, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "Buena profundidad y movilidad" } },
-            { id: 5, name: "Del Palacio, Maximiliano", pos: "Ala", leg: "Derecho", date: "2026-02-07", weight: 80.4, height: 1.72, musc: 34.3, adip: 29.1, visc: 10, imc: 27.2, ed_met: 46, y25: 18.5, y26: 18.5, cmj: 32, abk: null, cmj_de: 15, cmj_iz: 16, asym_cmj: 6.5, broad: 2.1, broad_de: 1.1, broad_iz: 1.0, asym_br: 10, kin: { t: "", c: "", u: "", s: "" } },
             { id: 6, name: "Figueroa, Frank", pos: "Arquero", leg: "Derecho", date: "2026-02-07", weight: 87.3, height: 1.7, musc: 34.3, adip: 31.0, visc: 11, imc: 30.2, ed_met: 48, y25: 18.1, y26: 16.2, cmj: 36.3, abk: 44.1, cmj_de: 20.4, cmj_iz: 18.8, asym_cmj: -7.84, broad: 2.1, broad_de: 1.95, broad_iz: 1.87, asym_br: -4.1, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/cadera/pelvis" } },
             { id: 7, name: "Fiocchi, Walter", pos: "Ala", leg: "Izquierda", date: "2026-02-07", weight: 89.3, height: 1.74, musc: 37.3, adip: 24.7, visc: 10, imc: 29.2, ed_met: 51, y25: 18.4, y26: 18.4, cmj: 37.4, abk: 42.9, cmj_de: 18.8, cmj_iz: 18.8, asym_cmj: 0, broad: 2.25, broad_de: 1.85, broad_iz: 2.1, asym_br: 13.5, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/cadera/pelvis" } },
             { id: 8, name: "Gardiol, Agustín", pos: "Ala", leg: "Derecho", date: "2026-02-07", weight: 68.5, height: 1.75, musc: 40.9, adip: 17.9, visc: 5, imc: 22.4, ed_met: 27, y25: 20.3, y26: 20.3, cmj: 34.2, abk: 38.5, cmj_de: 22, cmj_iz: 18, asym_cmj: -18.18, broad: 2.5, broad_de: 2, broad_iz: 1.97, asym_br: -1.5, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "mejorar movilidad escapular" } },
@@ -342,8 +402,6 @@
             { id: 11, name: "Gutiérrez, Yonathan", pos: "Ala", leg: "Derecho", date: "2026-02-07", weight: 75.4, height: 1.79, musc: 38.4, adip: 21.8, visc: 6, imc: 23.5, ed_met: 27, y25: 18.1, y26: 18.1, cmj: 52.8, abk: 58, cmj_de: 30.1, cmj_iz: 36.3, asym_cmj: 20.6, broad: 2.51, broad_de: 2.42, broad_iz: 2.46, asym_br: 1.65, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "mejorar movilidad escapular" } },
             { id: 12, name: "Ledesma, Facundo", pos: "Ala", leg: "Izquierda", date: "2026-02-07", weight: 70.7, height: 1.74, musc: 38.9, adip: 22.3, visc: 6, imc: 23.4, ed_met: 29, y25: 20.0, y26: 19.5, cmj: 34.2, abk: 40.8, cmj_de: 19.6, cmj_iz: 16.6, asym_cmj: -15.31, broad: 2.1, broad_de: 1.82, broad_iz: 1.92, asym_br: 5.49, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
             { id: 13, name: "Migliorisi, Diego", pos: "Ala", leg: "Izquierda", date: "2026-02-07", weight: 72.1, height: 1.76, musc: 41.0, adip: 15.2, visc: 4, imc: 23.3, ed_met: null, y25: 17.4, y26: 17.0, cmj: 30.1, abk: 34.2, cmj_de: 15.9, cmj_iz: 16.7, asym_cmj: 5.03, broad: 1.93, broad_de: 1.95, broad_iz: 1.92, asym_br: -1.53, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
-            { id: 14, name: "Quiroga, Gonzalo", pos: "Cierre", leg: "Derecho", date: "2026-02-07", weight: 75, height: 1.78, musc: 42, adip: 18, visc: 5, imc: 24, ed_met: null, y25: 18.5, y26: 18.5, cmj: 38, abk: null, cmj_de: 18, cmj_iz: 19, asym_cmj: 5, broad: 2.3, broad_de: 2.1, broad_iz: 2.1, asym_br: 0, kin: { t: "", c: "", u: "", s: "" } },
-            { id: 15, name: "Reche, Agustín", pos: "Ala", leg: "Izquierda", date: "2026-02-07", weight: 71.2, height: 1.71, musc: 40.5, adip: 19.6, visc: 7, imc: 24.3, ed_met: 31, y25: 19.6, y26: 19.6, cmj: 35, abk: null, cmj_de: 17, cmj_iz: 18, asym_cmj: 5, broad: 2.2, broad_de: 1.0, broad_iz: 1.1, asym_br: 10, kin: { t: "", c: "", u: "", s: "" } },
             { id: 16, name: "Rumak, Brian", pos: "Cierre", leg: "Derecho", date: "2026-02-07", weight: 78.9, height: 1.8, musc: 40.3, adip: 18.6, visc: 6, imc: 24.6, ed_met: 40, y25: 20.0, y26: 20.0, cmj: 39.6, abk: 44.1, cmj_de: 18, cmj_iz: 15.9, asym_cmj: -11.66, broad: 2.3, broad_de: 2, broad_iz: 2, asym_br: 0, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
             { id: 17, name: "Silva, Thiago", pos: "Cierre", leg: "Derecho", date: "2026-02-07", weight: 85.7, height: 1.78, musc: 36.4, adip: 26.9, visc: 8, imc: 27.9, ed_met: 46, y25: 18.2, y26: 18.8, cmj: 32.1, abk: 39.6, cmj_de: 17.3, cmj_iz: 13.2, asym_cmj: -23.70, broad: 2.13, broad_de: 1.96, broad_iz: 1.98, asym_br: 1.02, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "trabajar estabilidad pelvica/cadera", s: "movilidad cadera/pelvis" } },
             { id: 18, name: "Smokvina, Ignacio", pos: "Ala", leg: "Izquierda", date: "2026-02-07", weight: 69.8, height: 1.73, musc: 41.1, adip: 19.4, visc: 5, imc: 23.3, ed_met: 26, y25: 19.4, y26: 19.4, cmj: 34.2, abk: 40.8, cmj_de: 18.8, cmj_iz: 15.9, asym_cmj: -15.42, broad: 2.09, broad_de: 1.88, broad_iz: 1.94, asym_br: 3.19, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "tobillo/escapular/cadera" } },
@@ -354,10 +412,8 @@
             { id: 25, name: "Mack, Ramiro", pos: "Pivot", leg: "Izquierda", date: "2026-02-07", weight: 92.2, height: 1.85, musc: 39.6, adip: 20.7, visc: 7, imc: 26.9, ed_met: 50, y25: 18.1, y26: 18.1, cmj: 33.2, abk: 37.4, cmj_de: 16.7, cmj_iz: 11.9, asym_cmj: -28.74, broad: 2.33, broad_de: 2, broad_iz: 1.86, asym_br: -7, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/escapular" } }
         ];
 
-        // REFERENCIAS IDEALES
-        const ELITE = { musc: 48, adip: 11, visc: 4, cmj: 45, broad: 2.5, yoyo: 21.0, asym: 0, imc: 23.0, ed_met: 20 };
+        const ELITE = { musc: 48, adip: 11, visc: 4, cmj: 45, broad: 2.5, yoyo: 21.0, asym: 0, imc: 23.0, ed_met: 20, abk: 60.0 };
 
-        // BIBLIOTECA DE EJERCICIOS Y VIDEOS
         const REHAB_LIB = {
             "isquiosural": [{t: "Dead Bugs", v: "#"}, {t: "Puente glúteo unilateral", v: "#"}, {t: "Peso muerto rumano uni", v: "#"}],
             "movilidad": [{t: "Dorsiflexión c/ banda", v: "#"}, {t: "Obelisco", v: "#"}, {t: "Movilidad Toráxica", v: "#"}],
@@ -371,7 +427,92 @@
         let charts = {};
         let compSel = [1, 2, 3, 21];
 
+        function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                parseCSV(text);
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(text) {
+            const lines = text.split('\n');
+            if(lines.length < 2) return;
+            
+            let newData = [];
+            let maxId = Math.max(...playersData.map(p => p.id), 0);
+
+            for(let i = 1; i < lines.length; i++) {
+                if(!lines[i].trim()) continue;
+                const cols = lines[i].split(';');
+                if(cols.length < 24) continue;
+
+                // Update si existe, sino crear
+                let existingIdx = playersData.findIndex(p => p.name.trim().toLowerCase() === cols[0].trim().toLowerCase());
+                
+                let p = {
+                    id: existingIdx !== -1 ? playersData[existingIdx].id : ++maxId,
+                    name: cols[0].trim(),
+                    pos: cols[1].trim(),
+                    leg: cols[2].trim(),
+                    date: cols[3].trim(),
+                    weight: parseFloat(cols[4]) || null,
+                    height: parseFloat(cols[5]) || null,
+                    musc: parseFloat(cols[6]) || null,
+                    adip: parseFloat(cols[7]) || null,
+                    visc: parseFloat(cols[8]) || null,
+                    imc: parseFloat(cols[9]) || null,
+                    ed_met: parseFloat(cols[10]) || null,
+                    y25: parseFloat(cols[11]) || null,
+                    y26: parseFloat(cols[12]) || null,
+                    cmj: parseFloat(cols[13]) || null,
+                    abk: parseFloat(cols[14]) || null,
+                    cmj_de: parseFloat(cols[15]) || null,
+                    cmj_iz: parseFloat(cols[16]) || null,
+                    broad: parseFloat(cols[17]) || null,
+                    broad_de: parseFloat(cols[18]) || null,
+                    broad_iz: parseFloat(cols[19]) || null,
+                    kin: {
+                        t: cols[20] ? cols[20].trim() : "",
+                        c: cols[21] ? cols[21].trim() : "",
+                        u: cols[22] ? cols[22].trim() : "",
+                        s: cols[23] ? cols[23].trim() : ""
+                    }
+                };
+
+                // Calcular Asimetrias
+                if(p.cmj_de && p.cmj_iz) {
+                    let maxCmj = Math.max(p.cmj_de, p.cmj_iz);
+                    let minCmj = Math.min(p.cmj_de, p.cmj_iz);
+                    let asym = ((maxCmj - minCmj) / maxCmj) * 100;
+                    p.asym_cmj = parseFloat((p.cmj_de < p.cmj_iz ? -asym : asym).toFixed(2));
+                }
+                if(p.broad_de && p.broad_iz) {
+                    let maxBr = Math.max(p.broad_de, p.broad_iz);
+                    let minBr = Math.min(p.broad_de, p.broad_iz);
+                    let asym = ((maxBr - minBr) / maxBr) * 100;
+                    p.asym_br = parseFloat((p.broad_de < p.broad_iz ? -asym : asym).toFixed(2));
+                }
+
+                if(existingIdx !== -1) {
+                    playersData[existingIdx] = p;
+                } else {
+                    playersData.push(p);
+                }
+            }
+            
+            initSelectors();
+            renderIndividual();
+            renderGeneral();
+            renderCompare(); // Actualizar compare
+            document.getElementById('csv-upload').value = ''; // Reset
+        }
+
         function getColorSemaforo(val, type) {
+            if(val == null) return '#f8fafc';
             if(type === 'adip') return val <= 11 ? C_GREEN : (val <= 18 ? C_YELLOW : C_RED);
             if(type === 'asym') { let v = Math.abs(val); return v <= 10 ? C_GREEN : (v <= 15 ? C_YELLOW : C_RED); }
             if(type === 'musc') return val >= 46 ? C_GREEN : (val >= 42 ? C_YELLOW : C_RED);
@@ -390,32 +531,30 @@
             
             if(view === 'general') renderGeneral();
             if(view === 'individual') renderIndividual();
-            if(view === 'compare') renderMultiCompare();
+            if(view === 'compare') renderCompare();
         }
 
         function getAvg(arr, key) {
             let sum = 0, count = 0;
-            arr.forEach(p => { if(p[key] !== null && p[key] !== undefined) { sum += p[key]; count++; } });
+            arr.forEach(p => { if(p[key] !== null && p[key] !== undefined && !isNaN(p[key])) { sum += p[key]; count++; } });
             return count === 0 ? 0 : sum / count;
         }
 
         function renderGeneral() {
             document.getElementById('stat-musc').innerText = getAvg(playersData, 'musc').toFixed(1) + '%';
             document.getElementById('stat-adip').innerText = getAvg(playersData, 'adip').toFixed(1) + '%';
-            let asyms = playersData.map(p => Math.abs(p.asym_cmj));
-            document.getElementById('stat-asym').innerText = (asyms.reduce((a,b)=>a+b,0)/asyms.length).toFixed(1) + '%';
             document.getElementById('stat-yoyo').innerText = getAvg(playersData, 'y26').toFixed(1);
             
-            let criticos = playersData.filter(p => Math.abs(p.asym_cmj) > 15 || p.adip > 18);
+            let criticos = playersData.filter(p => (p.asym_cmj !== undefined && Math.abs(p.asym_cmj) > 15) || (p.adip !== undefined && p.adip > 18));
             document.getElementById('stat-alerts').innerText = criticos.length;
 
-            let tCmj = [...playersData].sort((a,b)=>b.cmj - a.cmj).slice(0,3);
+            let tCmj = [...playersData].filter(p => p.cmj).sort((a,b)=>b.cmj - a.cmj).slice(0,3);
             document.getElementById('top-cmj').innerHTML = tCmj.map(p => `<div class="flex justify-between text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-club-yellow">${p.cmj} cm</span></div>`).join('');
             
-            let tYoYo = [...playersData].sort((a,b)=>b.y26 - a.y26).slice(0,3);
+            let tYoYo = [...playersData].filter(p => p.y26).sort((a,b)=>b.y26 - a.y26).slice(0,3);
             document.getElementById('top-yoyo').innerHTML = tYoYo.map(p => `<div class="flex justify-between text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-club-green">${p.y26}</span></div>`).join('');
             
-            let tAdip = [...playersData].sort((a,b)=>a.adip - b.adip).slice(0,3);
+            let tAdip = [...playersData].filter(p => p.adip).sort((a,b)=>a.adip - b.adip).slice(0,3);
             document.getElementById('top-adip').innerHTML = tAdip.map(p => `<div class="flex justify-between text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-emerald-500">${p.adip}%</span></div>`).join('');
 
             document.getElementById('critical-list').innerHTML = criticos.map(p => `<div class="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs font-bold text-red-400">${p.name.split(',')[0]} (${Math.abs(p.asym_cmj)>15?'Asim '+p.asym_cmj+'%':'Adip '+p.adip+'%'})</div>`).join('');
@@ -441,25 +580,40 @@
             if(!p) return;
 
             let names = p.name.split(',');
-            document.getElementById('ind-avatar').innerText = names[0][0] + (names[1] ? names[1].trim()[0] : '');
-            document.getElementById('ind-surname').innerText = names[0];
+            document.getElementById('ind-avatar') ? document.getElementById('ind-avatar').innerText = names[0][0] + (names[1] ? names[1].trim()[0] : '') : null;
+            document.getElementById('ind-surname').innerText = names[0] || '';
             document.getElementById('ind-name').innerText = names[1] ? names[1].trim() : '';
-            document.getElementById('ind-pos').innerText = p.pos;
+            document.getElementById('ind-pos').innerText = p.pos || '--';
             
-            document.getElementById('ind-date').innerText = p.date.split('-').reverse().join('-');
-            document.getElementById('ind-leg').innerText = p.leg;
-            document.getElementById('ind-weight').innerText = p.weight ? p.weight + ' kg' : '--';
-            document.getElementById('ind-height').innerText = p.height ? (p.height * 100).toFixed(0) + ' cm' : '--';
+            document.getElementById('ind-date').innerText = p.date ? p.date.split('-').reverse().join('-') : '--';
+            document.getElementById('ind-leg').innerText = p.leg || '--';
+            document.getElementById('ind-weight').innerText = p.weight ? p.weight : '--';
+            document.getElementById('ind-height').innerText = p.height ? (p.height * 100).toFixed(0) : '--';
+
+            // Composición y Promedios
+            let eqMusc = getAvg(playersData, 'musc').toFixed(1);
+            let eqAdip = getAvg(playersData, 'adip').toFixed(1);
+            let eqVisc = getAvg(playersData, 'visc').toFixed(1);
+            let eqImc = getAvg(playersData, 'imc').toFixed(1);
+            let eqEdMet = getAvg(playersData, 'ed_met').toFixed(1);
 
             document.getElementById('ind-musc').innerText = p.musc ? p.musc + '%' : '--';
             document.getElementById('ind-musc').style.color = getColorSemaforo(p.musc, 'musc');
+            document.getElementById('ind-eq-musc').innerText = eqMusc + '%';
+
             document.getElementById('ind-adip').innerText = p.adip ? p.adip + '%' : '--';
             document.getElementById('ind-adip').style.color = getColorSemaforo(p.adip, 'adip');
-            document.getElementById('ind-visc').innerText = p.visc ?? '--';
-            document.getElementById('ind-imc').innerText = p.imc ?? '--';
-            document.getElementById('ind-edmet').innerText = p.ed_met ?? '--';
+            document.getElementById('ind-eq-adip').innerText = eqAdip + '%';
 
-            let tMusc = getAvg(playersData, 'musc'), tAdip = getAvg(playersData, 'adip');
+            document.getElementById('ind-visc').innerText = p.visc ?? '--';
+            document.getElementById('ind-eq-visc').innerText = eqVisc;
+
+            document.getElementById('ind-imc').innerText = p.imc ?? '--';
+            document.getElementById('ind-eq-imc').innerText = eqImc;
+
+            document.getElementById('ind-edmet').innerText = p.ed_met ?? '--';
+            document.getElementById('ind-eq-edmet').innerText = eqEdMet;
+
             if(charts.iComp) charts.iComp.destroy();
             charts.iComp = new Chart(document.getElementById('chart-ind-comp'), {
                 type: 'bar',
@@ -467,19 +621,24 @@
                     labels: ['Músculo %', 'Adiposidad %'],
                     datasets: [
                         { label: 'Jugador', data: [p.musc, p.adip], backgroundColor: C_YELLOW, borderRadius: 4 },
-                        { label: 'Promedio Equipo', data: [tMusc, tAdip], backgroundColor: '#475569', borderRadius: 4 },
+                        { label: 'Promedio Equipo', data: [eqMusc, eqAdip], backgroundColor: '#475569', borderRadius: 4 },
                         { label: 'Ideal Elite', data: [ELITE.musc, ELITE.adip], backgroundColor: C_GREEN, borderRadius: 4 }
                     ]
                 },
                 options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } } }
             });
 
-            let dif = (p.y26 - p.y25).toFixed(1);
+            // Yo-Yo
+            let eqYoyo = getAvg(playersData, 'y26').toFixed(1);
+            document.getElementById('ind-eq-yoyo').innerText = eqYoyo;
+            let dif = (p.y26 && p.y25) ? (p.y26 - p.y25).toFixed(1) : null;
             document.getElementById('ind-y25').innerText = p.y25 || '--';
             document.getElementById('ind-y26').innerText = p.y26 || '--';
             let elDif = document.getElementById('ind-yoyo-dif');
-            elDif.innerText = dif > 0 ? '+'+dif : dif;
-            elDif.className = `text-[10px] font-black ${dif >= 0 ? 'text-club-green' : 'text-red-500'}`;
+            if(dif !== null) {
+                elDif.innerText = dif > 0 ? '+'+dif : dif;
+                elDif.className = `text-[10px] font-black ${dif >= 0 ? 'text-club-green' : 'text-red-500'}`;
+            } else { elDif.innerText = '--'; }
 
             if(charts.iYoYo) charts.iYoYo.destroy();
             charts.iYoYo = new Chart(document.getElementById('chart-ind-yoyo'), {
@@ -487,28 +646,36 @@
                 data: {
                     labels: ['Eval 2025', 'Eval 2026'],
                     datasets: [
-                        { label: 'Nivel', data: [p.y25, p.y26], borderColor: C_GREEN, backgroundColor: C_GREEN, tension: 0.1 },
+                        { label: 'Jugador', data: [p.y25, p.y26], borderColor: C_GREEN, backgroundColor: C_GREEN, tension: 0.1, borderWidth: 3 },
                         { label: 'Elite', data: [ELITE.yoyo, ELITE.yoyo], borderColor: '#22c55e', borderDash: [2,2], pointRadius: 0 }
                     ]
                 },
                 options: { maintainAspectRatio: false, scales:{ y:{ min: 15, grid:{color:'#1e293b'} } } }
             });
 
+            // Potencia
+            let eqCmj = getAvg(playersData, 'cmj').toFixed(1);
+            let eqBroad = getAvg(playersData, 'broad').toFixed(2);
+            let eqAbk = getAvg(playersData, 'abk').toFixed(1);
+
             document.getElementById('pot-cmj').innerText = p.cmj || '--';
             document.getElementById('pot-cmjd').innerText = p.cmj_de || '--';
             document.getElementById('pot-cmji').innerText = p.cmj_iz || '--';
-            document.getElementById('pot-difc').innerText = (p.cmj_de && p.cmj_iz) ? (p.cmj_de - p.cmj_iz).toFixed(1) : '--';
+            document.getElementById('pot-difc').innerText = (p.cmj_de && p.cmj_iz) ? Math.abs(p.cmj_de - p.cmj_iz).toFixed(1) : '--';
             document.getElementById('pot-asymc').innerText = p.asym_cmj ? p.asym_cmj + '%' : '--';
             document.getElementById('pot-asymc').style.color = getColorSemaforo(p.asym_cmj, 'asym');
+            document.getElementById('pot-eq-cmj').innerText = eqCmj;
 
             document.getElementById('pot-broad').innerText = p.broad || '--';
             document.getElementById('pot-broadd').innerText = p.broad_de || '--';
             document.getElementById('pot-broadi').innerText = p.broad_iz || '--';
-            document.getElementById('pot-difb').innerText = (p.broad_de && p.broad_iz) ? (p.broad_de - p.broad_iz).toFixed(2) : '--';
+            document.getElementById('pot-difb').innerText = (p.broad_de && p.broad_iz) ? Math.abs(p.broad_de - p.broad_iz).toFixed(2) : '--';
             document.getElementById('pot-asymb').innerText = p.asym_br ? p.asym_br + '%' : '--';
             document.getElementById('pot-asymb').style.color = getColorSemaforo(p.asym_br, 'asym');
+            document.getElementById('pot-eq-broad').innerText = eqBroad;
             
             document.getElementById('pot-abk').innerText = p.abk || '--';
+            document.getElementById('pot-eq-abk').innerText = eqAbk;
 
             if(charts.iPow) charts.iPow.destroy();
             charts.iPow = new Chart(document.getElementById('chart-ind-power'), {
@@ -517,38 +684,21 @@
                     labels: ['Der', 'Izq'],
                     datasets: [
                         { label: 'CMJ Uni (cm)', data: [p.cmj_de, p.cmj_iz], backgroundColor: C_YELLOW },
-                        { label: 'Broad Uni (x10)', data: [p.broad_de*10, p.broad_iz*10], backgroundColor: C_GREEN }
+                        { label: 'Broad Uni (x10)', data: [p.broad_de ? p.broad_de*10 : null, p.broad_iz ? p.broad_iz*10 : null], backgroundColor: C_GREEN }
                     ]
                 },
                 options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } } }
             });
 
-            let pMusc = getAvg(playersData.filter(x=>x.pos===p.pos), 'musc');
-            let pCmj = getAvg(playersData.filter(x=>x.pos===p.pos), 'cmj');
-            let pYoyo = getAvg(playersData.filter(x=>x.pos===p.pos), 'y26');
-
-            if(charts.iRad) charts.iRad.destroy();
-            charts.iRad = new Chart(document.getElementById('chart-ind-radar'), {
-                type: 'radar',
-                data: {
-                    labels: ['Músculo', 'CMJ', 'Yo-Yo', 'Broad', 'Grasa (Inv)'],
-                    datasets: [
-                        { label: 'Jugador', data: [p.musc, p.cmj, p.y26*2, p.broad*20, 30-p.adip], borderColor: C_YELLOW, backgroundColor: 'rgba(245, 158, 11, 0.2)' },
-                        { label: 'Prom Puesto', data: [pMusc, pCmj, pYoyo*2, 40, 30-15], borderColor: '#8b5cf6', fill: false, borderDash:[2,2] },
-                        { label: 'Elite', data: [ELITE.musc, ELITE.cmj, ELITE.yoyo*2, ELITE.broad*20, 30-ELITE.adip], borderColor: C_GREEN, fill: false, borderDash:[5,5] }
-                    ]
-                },
-                options: { scales:{ r:{ grid:{color:'#1e293b'}, pointLabels:{color:'#64748b'}, ticks:{display:false} } } }
-            });
-
-            document.getElementById('kin-tob').innerText = p.kin.t || 'Sin registro';
-            document.getElementById('kin-cad').innerText = p.kin.c || 'Sin registro';
-            document.getElementById('kin-uni').innerText = p.kin.u || 'Sin registro';
-            document.getElementById('kin-sen').innerText = p.kin.s || 'Sin registro';
+            // Kinésico
+            document.getElementById('kin-tob').innerText = (p.kin && p.kin.t) ? p.kin.t : 'Sin registro';
+            document.getElementById('kin-cad').innerText = (p.kin && p.kin.c) ? p.kin.c : 'Sin registro';
+            document.getElementById('kin-uni').innerText = (p.kin && p.kin.u) ? p.kin.u : 'Sin registro';
+            document.getElementById('kin-sen').innerText = (p.kin && p.kin.s) ? p.kin.s : 'Sin registro';
 
             let eBox = document.getElementById('ind-exercises');
             eBox.innerHTML = '';
-            let txt = (p.kin.t + p.kin.c + p.kin.u + p.kin.s).toLowerCase();
+            let txt = p.kin ? (p.kin.t + p.kin.c + p.kin.u + p.kin.s).toLowerCase() : "";
             let added = false;
 
             Object.keys(REHAB_LIB).forEach(key => {
@@ -565,7 +715,7 @@
             if(!added) eBox.innerHTML = `<p class="text-[10px] text-slate-500 italic text-center py-4">Sin prescripción específica</p>`;
         }
 
-        function renderMultiCompare() {
+        function renderCompare() {
             const p = compSel.map(id => playersData.find(x => x.id === id)).filter(Boolean);
             const cols = ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6'];
 
@@ -576,7 +726,7 @@
                     labels: ['CMJ (cm)', 'Broad (x10)'],
                     datasets: p.map((x, i) => ({
                         label: x.name.split(',')[0],
-                        data: [x.cmj, x.broad*10],
+                        data: [x.cmj, x.broad ? x.broad*10 : null],
                         backgroundColor: cols[i], borderRadius: 4
                     }))
                 },
@@ -613,26 +763,30 @@
             });
         }
 
-        function init() {
+        function initSelectors() {
             const s = document.getElementById('player-select');
+            s.innerHTML = '';
             playersData.forEach(p => s.add(new Option(p.name, p.id)));
 
             for(let i=1; i<=4; i++) {
                 const el = document.getElementById('comp-'+i);
+                el.innerHTML = '';
                 playersData.forEach((p, idx) => {
                     const o = new Option(p.name, p.id);
                     if(idx === compSel[i-1]-1) o.selected = true;
                     el.add(o);
                 });
-                el.onchange = (e) => { compSel[i-1] = parseInt(e.target.value); renderMultiCompare(); };
             }
-
-            renderIndividual();
-            renderGeneral();
-            renderMultiCompare();
         }
 
-        window.onload = init;
+        function init() {
+            initSelectors();
+            renderIndividual();
+            renderGeneral();
+            renderCompare();
+        }
+
+        document.addEventListener("DOMContentLoaded", init);
     </script>
 </body>
 </html>
