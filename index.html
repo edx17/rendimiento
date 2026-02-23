@@ -2,7 +2,7 @@
 <html lang="es-AR" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Rendimiento Pro - Libertadores Futsal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -10,10 +10,12 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #020617; color: #f8fafc; }
         .glass-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.05); border-radius: 1.25rem; }
-        .btn-nav { transition: all 0.2s ease; cursor: pointer; }
+        .btn-nav { transition: all 0.2s ease; cursor: pointer; flex-shrink: 0; }
         .btn-nav.active { background-color: #10b981; color: #020617; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); } 
         .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         canvas { max-height: 350px; width: 100% !important; }
         .metric-card { background: rgba(2, 6, 23, 0.6); border: 1px solid rgba(51, 65, 85, 0.5); }
         .text-club-yellow { color: #f59e0b; }
@@ -22,145 +24,147 @@
         .bg-club-green { background-color: #10b981; }
         .tooltip { position: relative; display: inline-block; }
         .tooltip .tooltiptext {
-            visibility: hidden; width: 320px; background-color: #1e293b; color: #cbd5e1;
+            visibility: hidden; width: 280px; background-color: #1e293b; color: #cbd5e1;
             text-align: left; border-radius: 6px; padding: 10px; position: absolute; z-index: 100;
-            top: 125%; left: 50%; margin-left: -160px; font-size: 0.7rem; font-weight: normal;
+            top: 125%; left: 50%; transform: translateX(-50%); font-size: 0.7rem; font-weight: normal;
             border: 1px solid #334155; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
         }
+        @media (min-width: 768px) { .tooltip .tooltiptext { width: 320px; } }
         .tooltip:hover .tooltiptext { visibility: visible; }
+        .table-container { width: 100%; overflow-x: auto; }
+        .table-container table { min-width: 450px; }
     </style>
 </head>
-<body class="min-h-screen relative">
+<body class="min-h-screen relative pb-10">
 
-    <header class="bg-slate-900/95 border-b border-slate-800 p-4 sticky top-0 z-40 backdrop-blur-xl">
-        <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div class="flex items-center gap-5">
-                <img src="EscudoLiber.png" alt="Escudo Libertadores" class="w-16 h-16 object-contain bg-white rounded-2xl p-1.5 shadow-2xl border border-slate-700" onerror="this.style.display='none'">
-                <div>
-                    <h1 class="text-2xl font-black tracking-tighter uppercase leading-none italic text-club-green">Libertadores <span class="text-club-yellow">PRO-PERFORMANCE</span></h1>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Ciencia Aplicada • 1ra AFA</p>
+    <header class="bg-slate-900/95 border-b border-slate-800 p-3 md:p-4 sticky top-0 z-40 backdrop-blur-xl">
+        <div class="max-w-[1400px] mx-auto flex flex-col lg:flex-row items-center justify-between gap-4 md:gap-6">
+            <div class="flex items-center gap-3 md:gap-5 w-full lg:w-auto justify-center lg:justify-start">
+                <img src="EscudoLiber.png" alt="Escudo Libertadores" class="w-12 h-12 md:w-16 md:h-16 object-contain bg-white rounded-2xl p-1.5 shadow-2xl border border-slate-700" onerror="this.style.display='none'">
+                <div class="text-center lg:text-left">
+                    <h1 class="text-xl md:text-2xl font-black tracking-tighter uppercase leading-none italic text-club-green">Libertadores <span class="text-club-yellow">PRO</span></h1>
+                    <p class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase tracking-[0.2em] mt-1">Ciencia Aplicada • 1ra AFA</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-2 bg-slate-950 p-2 rounded-xl border border-slate-800">
-                    <label for="csv-upload" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-xs font-black uppercase text-slate-300 px-4 py-2 rounded-lg transition-colors">
+            <div class="flex flex-col md:flex-row items-center gap-3 md:gap-4 w-full lg:w-auto">
+                <div class="flex items-center justify-between lg:justify-start gap-2 bg-slate-950 p-2 rounded-xl border border-slate-800 w-full md:w-auto">
+                    <label for="csv-upload" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-[10px] md:text-xs font-black uppercase text-slate-300 px-4 py-2 rounded-lg transition-colors flex-grow text-center">
                         SUBIR DB (.CSV)
                     </label>
                     <input type="file" id="csv-upload" accept=".csv" class="hidden" onchange="handleCSVUpload(event)">
-                    <div class="tooltip cursor-help bg-slate-800 text-slate-400 w-6 h-6 flex items-center justify-center rounded-full text-xs font-black border border-slate-700">
+                    <div class="tooltip cursor-help bg-slate-800 text-slate-400 w-8 h-8 md:w-6 md:h-6 flex items-center justify-center rounded-full text-xs font-black border border-slate-700 flex-shrink-0">
                         !
                         <span class="tooltiptext uppercase tracking-wider leading-relaxed">
-                            <strong class="text-club-yellow">Formato General (Separador ';')</strong><br><br>
+                            <strong class="text-club-yellow">Formato (Separador ';')</strong><br><br>
                             Columnas Base:<br>
                             Nombre;Puesto;Pierna;Fecha;Peso;Talla;%Musc;%Adip;Visc;IMC;EdMet;Yoyo25;Yoyo26;CMJ;ABK;CMJ_Der;CMJ_Izq;Broad;Broad_Der;Broad_Izq;K_Tobillos;K_Cadera;K_Unipodal;K_Sentadilla
                         </span>
                     </div>
                 </div>
 
-                <nav class="flex p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800">
-                    <button onclick="setTab('individual')" id="tab-individual" class="btn-nav active px-4 py-2 rounded-xl text-xs font-black uppercase">FÍSICO</button>
-                    <button onclick="setTab('nutri')" id="tab-nutri" class="btn-nav px-4 py-2 rounded-xl text-xs font-black uppercase text-slate-400">NUTRICIÓN</button>
-                    <button onclick="setTab('general')" id="tab-general" class="btn-nav px-4 py-2 rounded-xl text-xs font-black uppercase text-slate-400">EQUIPO</button>
-                    <button onclick="setTab('compare')" id="tab-compare" class="btn-nav px-4 py-2 rounded-xl text-xs font-black uppercase text-slate-400">STAFF-COMPARE</button>
+                <nav class="flex w-full overflow-x-auto hide-scrollbar p-1.5 bg-slate-950/80 rounded-2xl border border-slate-800 gap-1 md:gap-0">
+                    <button onclick="setTab('individual')" id="tab-individual" class="btn-nav active px-3 md:px-4 py-2 rounded-xl text-[10px] md:text-xs font-black uppercase whitespace-nowrap">FÍSICO</button>
+                    <button onclick="setTab('nutri')" id="tab-nutri" class="btn-nav px-3 md:px-4 py-2 rounded-xl text-[10px] md:text-xs font-black uppercase text-slate-400 whitespace-nowrap">NUTRICIÓN</button>
+                    <button onclick="setTab('general')" id="tab-general" class="btn-nav px-3 md:px-4 py-2 rounded-xl text-[10px] md:text-xs font-black uppercase text-slate-400 whitespace-nowrap">EQUIPO</button>
+                    <button onclick="setTab('compare')" id="tab-compare" class="btn-nav px-3 md:px-4 py-2 rounded-xl text-[10px] md:text-xs font-black uppercase text-slate-400 whitespace-nowrap">COMPARE</button>
                 </nav>
             </div>
         </div>
     </header>
 
-    <main class="max-w-[1400px] mx-auto px-4 py-8 relative">
+    <main class="max-w-[1400px] mx-auto px-3 md:px-4 py-6 md:py-8 relative">
 
-        <!-- MODAL NUTRICION -->
-        <div id="nutri-modal" class="hidden fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 transition-opacity">
-            <div class="glass-panel w-full max-w-3xl max-h-[85vh] overflow-y-auto custom-scrollbar p-8 relative border-emerald-500/30">
-                <button onclick="closeNutriModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white font-black text-2xl transition-colors">&times;</button>
-                <div class="mb-6 border-b border-slate-800 pb-4">
-                    <p class="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Prescripción Dietaria</p>
-                    <h2 class="text-2xl font-black uppercase text-club-green">Plan: <span id="modal-player-name" class="text-white"></span></h2>
+        <div id="nutri-modal" class="hidden fixed inset-0 z-[100] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-2 md:p-4 transition-opacity">
+            <div class="glass-panel w-full max-w-3xl max-h-[90vh] overflow-y-auto custom-scrollbar p-5 md:p-8 relative border-emerald-500/30">
+                <button onclick="closeNutriModal()" class="absolute top-3 right-4 md:top-4 md:right-4 text-slate-400 hover:text-white font-black text-3xl transition-colors">&times;</button>
+                <div class="mb-6 border-b border-slate-800 pb-4 pr-6">
+                    <p class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Prescripción Dietaria</p>
+                    <h2 class="text-xl md:text-2xl font-black uppercase text-club-green">Plan: <span id="modal-player-name" class="text-white"></span></h2>
                 </div>
-                <div id="modal-plan-content" class="text-sm text-slate-300 space-y-6 font-medium leading-relaxed">
-                    <!-- Dinámico -->
-                </div>
+                <div id="modal-plan-content" class="text-sm text-slate-300 space-y-6 font-medium leading-relaxed"></div>
             </div>
         </div>
 
-        <!-- VISTA: FISICO INDIVIDUAL -->
         <section id="view-individual" class="space-y-6 animate-in fade-in duration-300">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Perfil Jugador -->
                 <div class="lg:col-span-3">
-                    <div class="glass-panel p-6 sticky top-28">
+                    <div class="glass-panel p-5 md:p-6 sticky top-32">
                         <select id="player-select" onchange="renderIndividual()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-black focus:ring-2 focus:ring-emerald-500 appearance-none mb-6 cursor-pointer text-club-yellow"></select>
                         <div class="text-center border-b border-slate-800 pb-6 mb-6">
-                            <h2 class="text-2xl font-black uppercase tracking-tighter" id="ind-name">--</h2>
-                            <h3 class="text-sm text-slate-400 font-bold uppercase" id="ind-surname">--</h3>
+                            <h2 class="text-xl md:text-2xl font-black uppercase tracking-tighter" id="ind-name">--</h2>
+                            <h3 class="text-xs md:text-sm text-slate-400 font-bold uppercase" id="ind-surname">--</h3>
                             <div class="inline-block mt-3 px-3 py-1 bg-slate-800 border border-slate-700 rounded-md">
-                                <p class="text-[10px] font-black uppercase tracking-widest text-club-green" id="ind-pos">--</p>
+                                <p class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-club-green" id="ind-pos">--</p>
                             </div>
                         </div>
                         <div class="space-y-3">
-                            <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg"><span class="text-[10px] text-slate-500 font-bold uppercase">Evaluación</span><span class="text-xs font-black text-slate-200" id="ind-date">--</span></div>
-                            <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg"><span class="text-[10px] text-slate-500 font-bold uppercase">Pierna Hábil</span><span class="text-xs font-black text-slate-200" id="ind-leg">--</span></div>
-                            <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg"><span class="text-[10px] text-slate-500 font-bold uppercase">Peso (kg)</span><span class="text-xs font-black text-slate-200" id="ind-weight">--</span></div>
-                            <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg"><span class="text-[10px] text-slate-500 font-bold uppercase">Talla (cm)</span><span class="text-xs font-black text-slate-200" id="ind-height">--</span></div>
+                            <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg"><span class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase">Evaluación</span><span class="text-xs font-black text-slate-200" id="ind-date">--</span></div>
+                            <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg"><span class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase">Pierna Hábil</span><span class="text-xs font-black text-slate-200" id="ind-leg">--</span></div>
+                            <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg"><span class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase">Peso (kg)</span><span class="text-xs font-black text-slate-200" id="ind-weight">--</span></div>
+                            <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg"><span class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase">Talla (cm)</span><span class="text-xs font-black text-slate-200" id="ind-height">--</span></div>
                         </div>
                     </div>
                 </div>
-                <!-- Datos Físicos -->
                 <div class="lg:col-span-9 space-y-6">
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="glass-panel p-6 flex flex-col">
-                            <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-club-yellow">Composición Corporal (Bipedancia)</h3>
-                            <table class="w-full text-left text-xs mb-4">
-                                <thead><tr class="text-[9px] uppercase text-slate-500 border-b border-slate-800"><th class="py-2">Métrica</th><th class="py-2 text-center text-club-yellow">Jugador</th><th class="py-2 text-center">Equipo</th><th class="py-2 text-center text-emerald-500">Elite</th></tr></thead>
-                                <tbody class="font-black text-slate-200">
-                                    <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Músculo %</td><td class="py-2 text-center" id="ind-musc">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-musc">--</td><td class="py-2 text-center text-emerald-500">48.0</td></tr>
-                                    <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Adiposidad %</td><td class="py-2 text-center" id="ind-adip">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-adip">--</td><td class="py-2 text-center text-emerald-500">11.0</td></tr>
-                                    <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Visceral</td><td class="py-2 text-center" id="ind-visc">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-visc">--</td><td class="py-2 text-center text-emerald-500">4.0</td></tr>
-                                    <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">IMC</td><td class="py-2 text-center" id="ind-imc">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-imc">--</td><td class="py-2 text-center text-emerald-500">23.0</td></tr>
-                                    <tr><td class="py-2 text-[10px] text-slate-400 uppercase">Edad Met.</td><td class="py-2 text-center text-club-yellow" id="ind-edmet">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-edmet">--</td><td class="py-2 text-center text-emerald-500">20.0</td></tr>
-                                </tbody>
-                            </table>
-                            <div class="flex-grow relative min-h-[120px]"><canvas id="chart-ind-comp"></canvas></div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="glass-panel p-5 md:p-6 flex flex-col">
+                            <h3 class="text-[10px] md:text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-club-yellow">Composición Corporal (Bipedancia)</h3>
+                            <div class="table-container mb-4">
+                                <table class="w-full text-left text-xs">
+                                    <thead><tr class="text-[8px] md:text-[9px] uppercase text-slate-500 border-b border-slate-800"><th class="py-2">Métrica</th><th class="py-2 text-center text-club-yellow">Jugador</th><th class="py-2 text-center">Equipo</th><th class="py-2 text-center text-emerald-500">Elite</th></tr></thead>
+                                    <tbody class="font-black text-slate-200">
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Músculo %</td><td class="py-2 text-center" id="ind-musc">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-musc">--</td><td class="py-2 text-center text-emerald-500">48.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Adiposidad %</td><td class="py-2 text-center" id="ind-adip">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-adip">--</td><td class="py-2 text-center text-emerald-500">11.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Visceral</td><td class="py-2 text-center" id="ind-visc">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-visc">--</td><td class="py-2 text-center text-emerald-500">4.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">IMC</td><td class="py-2 text-center" id="ind-imc">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-imc">--</td><td class="py-2 text-center text-emerald-500">23.0</td></tr>
+                                        <tr><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Edad Met.</td><td class="py-2 text-center text-club-yellow" id="ind-edmet">--</td><td class="py-2 text-center text-slate-400" id="ind-eq-edmet">--</td><td class="py-2 text-center text-emerald-500">20.0</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="flex-grow relative min-h-[150px]"><canvas id="chart-ind-comp"></canvas></div>
                         </div>
-                        <div class="glass-panel p-6 flex flex-col">
-                            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2"><h3 class="text-xs font-black uppercase text-club-green">Yo-Yo Test Evolutivo</h3><div class="px-2 py-1 rounded bg-slate-900 border border-slate-700"><span class="text-[9px] font-black uppercase text-slate-400">DIF Anual: </span><span class="text-[10px] font-black" id="ind-yoyo-dif">--</span></div></div>
-                            <div class="grid grid-cols-4 gap-2 mb-4">
-                                <div class="metric-card p-2 text-center rounded-lg"><span class="text-[8px] text-slate-500 font-black uppercase block">Año 2025</span><span class="text-sm font-black text-slate-300" id="ind-y25">--</span></div>
-                                <div class="metric-card p-2 text-center rounded-lg border-b-2 border-b-club-green bg-slate-900"><span class="text-[8px] text-club-green font-black uppercase block">Actual 2026</span><span class="text-sm font-black text-white" id="ind-y26">--</span></div>
-                                <div class="metric-card p-2 text-center rounded-lg"><span class="text-[8px] text-slate-400 font-black uppercase block">Prom. Equipo</span><span class="text-sm font-black text-slate-300" id="ind-eq-yoyo">--</span></div>
-                                <div class="metric-card p-2 text-center rounded-lg border border-emerald-500/30"><span class="text-[8px] text-emerald-500 font-black uppercase block">Ideal Elite</span><span class="text-sm font-black text-emerald-400">21.0</span></div>
+                        <div class="glass-panel p-5 md:p-6 flex flex-col">
+                            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-2">
+                                <h3 class="text-[10px] md:text-xs font-black uppercase text-club-green">Yo-Yo Test Evolutivo</h3>
+                                <div class="px-2 py-1 rounded bg-slate-900 border border-slate-700"><span class="text-[8px] md:text-[9px] font-black uppercase text-slate-400">DIF: </span><span class="text-[9px] md:text-[10px] font-black" id="ind-yoyo-dif">--</span></div>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1 md:gap-2 mb-4">
+                                <div class="metric-card p-1.5 md:p-2 text-center rounded-lg"><span class="text-[7px] md:text-[8px] text-slate-500 font-black uppercase block">Año 2025</span><span class="text-xs md:text-sm font-black text-slate-300" id="ind-y25">--</span></div>
+                                <div class="metric-card p-1.5 md:p-2 text-center rounded-lg border-b-2 border-b-club-green bg-slate-900"><span class="text-[7px] md:text-[8px] text-club-green font-black uppercase block">Actual 2026</span><span class="text-xs md:text-sm font-black text-white" id="ind-y26">--</span></div>
+                                <div class="metric-card p-1.5 md:p-2 text-center rounded-lg"><span class="text-[7px] md:text-[8px] text-slate-400 font-black uppercase block">Prom. Equipo</span><span class="text-xs md:text-sm font-black text-slate-300" id="ind-eq-yoyo">--</span></div>
+                                <div class="metric-card p-1.5 md:p-2 text-center rounded-lg border border-emerald-500/30"><span class="text-[7px] md:text-[8px] text-emerald-500 font-black uppercase block">Ideal Elite</span><span class="text-xs md:text-sm font-black text-emerald-400">21.0</span></div>
                             </div>
                             <div class="flex-grow relative min-h-[150px]"><canvas id="chart-ind-yoyo"></canvas></div>
                         </div>
                     </div>
-                    <div class="glass-panel p-6">
-                        <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-100">Evaluación de Potencia, Asimetrías y Comparativa</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                            <div>
+                    <div class="glass-panel p-5 md:p-6">
+                        <h3 class="text-[10px] md:text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-100">Evaluación de Potencia, Asimetrías y Comparativa</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                            <div class="table-container">
                                 <table class="w-full text-left text-xs">
-                                    <thead><tr class="text-[9px] uppercase text-slate-500 border-b border-slate-800"><th class="py-2">Métrica</th><th class="py-2 text-center text-club-yellow">Total</th><th class="py-2 text-center">Der</th><th class="py-2 text-center">Izq</th><th class="py-2 text-center">DIF(Asim%)</th><th class="py-2 text-center text-slate-400">Equipo</th><th class="py-2 text-right text-emerald-500">Elite</th></tr></thead>
+                                    <thead><tr class="text-[8px] md:text-[9px] uppercase text-slate-500 border-b border-slate-800"><th class="py-2">Métrica</th><th class="py-2 text-center text-club-yellow">Total</th><th class="py-2 text-center">Der</th><th class="py-2 text-center">Izq</th><th class="py-2 text-center">DIF(Asim%)</th><th class="py-2 text-center text-slate-400">Equipo</th><th class="py-2 text-right text-emerald-500">Elite</th></tr></thead>
                                     <tbody class="font-black text-slate-200">
-                                        <tr class="border-b border-slate-800/50"><td class="py-3 text-[10px] text-slate-400 uppercase">CMJ (cm)</td><td class="py-3 text-center text-club-yellow" id="pot-cmj">--</td><td class="py-3 text-center" id="pot-cmjd">--</td><td class="py-3 text-center" id="pot-cmji">--</td><td class="py-3 text-center"><span id="pot-difc">--</span> (<span id="pot-asymc">--</span>)</td><td class="py-3 text-center text-slate-400" id="pot-eq-cmj">--</td><td class="py-3 text-right text-emerald-500">45.0</td></tr>
-                                        <tr class="border-b border-slate-800/50"><td class="py-3 text-[10px] text-slate-400 uppercase">Broad (m)</td><td class="py-3 text-center text-club-yellow" id="pot-broad">--</td><td class="py-3 text-center" id="pot-broadd">--</td><td class="py-3 text-center" id="pot-broadi">--</td><td class="py-3 text-center"><span id="pot-difb">--</span> (<span id="pot-asymb">--</span>)</td><td class="py-3 text-center text-slate-400" id="pot-eq-broad">--</td><td class="py-3 text-right text-emerald-500">2.50</td></tr>
-                                        <tr><td class="py-3 text-[10px] text-slate-400 uppercase">ABK</td><td class="py-3 text-center text-club-yellow" id="pot-abk">--</td><td colspan="3" class="text-center text-slate-600 font-normal">N/A Unipodal</td><td class="py-3 text-center text-slate-400" id="pot-eq-abk">--</td><td class="py-3 text-right text-emerald-500">60.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-3 text-[9px] md:text-[10px] text-slate-400 uppercase">CMJ (cm)</td><td class="py-3 text-center text-club-yellow" id="pot-cmj">--</td><td class="py-3 text-center" id="pot-cmjd">--</td><td class="py-3 text-center" id="pot-cmji">--</td><td class="py-3 text-center whitespace-nowrap"><span id="pot-difc">--</span> (<span id="pot-asymc">--</span>)</td><td class="py-3 text-center text-slate-400" id="pot-eq-cmj">--</td><td class="py-3 text-right text-emerald-500">45.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-3 text-[9px] md:text-[10px] text-slate-400 uppercase">Broad (m)</td><td class="py-3 text-center text-club-yellow" id="pot-broad">--</td><td class="py-3 text-center" id="pot-broadd">--</td><td class="py-3 text-center" id="pot-broadi">--</td><td class="py-3 text-center whitespace-nowrap"><span id="pot-difb">--</span> (<span id="pot-asymb">--</span>)</td><td class="py-3 text-center text-slate-400" id="pot-eq-broad">--</td><td class="py-3 text-right text-emerald-500">2.50</td></tr>
+                                        <tr><td class="py-3 text-[9px] md:text-[10px] text-slate-400 uppercase">ABK</td><td class="py-3 text-center text-club-yellow" id="pot-abk">--</td><td colspan="3" class="text-center text-slate-600 font-normal">N/A Unipodal</td><td class="py-3 text-center text-slate-400" id="pot-eq-abk">--</td><td class="py-3 text-right text-emerald-500">60.0</td></tr>
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="relative min-h-[150px] flex items-center justify-center"><canvas id="chart-ind-power"></canvas></div>
+                            <div class="relative min-h-[200px] md:min-h-[150px] flex items-center justify-center"><canvas id="chart-ind-power"></canvas></div>
                         </div>
                     </div>
-                    <div class="glass-panel p-6 border-l-4 border-l-purple-500">
-                        <h3 class="text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-purple-400">Evaluación Kinésica y Correctivos</h3>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="space-y-3">
-                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800"><div class="flex items-center gap-2 mb-1"><span class="text-lg">🦶</span> <span class="text-[10px] font-black uppercase text-slate-500">Tobillos</span></div><p class="text-xs font-bold text-slate-300 ml-7" id="kin-tob">--</p></div>
-                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800"><div class="flex items-center gap-2 mb-1"><span class="text-lg">🦴</span> <span class="text-[10px] font-black uppercase text-slate-500">Cadera (Jurdan)</span></div><p class="text-xs font-bold text-slate-300 ml-7" id="kin-cad">--</p></div>
-                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800"><div class="flex items-center gap-2 mb-1"><span class="text-lg">⚖️</span> <span class="text-[10px] font-black uppercase text-slate-500">Unipodal</span></div><p class="text-xs font-bold text-slate-300 ml-7" id="kin-uni">--</p></div>
-                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800"><div class="flex items-center gap-2 mb-1"><span class="text-lg">🏋️</span> <span class="text-[10px] font-black uppercase text-slate-500">Sentadilla</span></div><p class="text-xs font-bold text-slate-300 ml-7" id="kin-sen">--</p></div>
+                    <div class="glass-panel p-5 md:p-6 border-l-4 border-l-purple-500">
+                        <h3 class="text-[10px] md:text-xs font-black uppercase mb-4 border-b border-slate-800 pb-2 text-purple-400">Evaluación Kinésica y Correctivos</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                            <div class="space-y-2 md:space-y-3">
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800"><div class="flex items-center gap-2 mb-1"><span class="text-base md:text-lg">🦶</span> <span class="text-[9px] md:text-[10px] font-black uppercase text-slate-500">Tobillos</span></div><p class="text-[10px] md:text-xs font-bold text-slate-300 ml-6 md:ml-7 leading-tight" id="kin-tob">--</p></div>
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800"><div class="flex items-center gap-2 mb-1"><span class="text-base md:text-lg">🦴</span> <span class="text-[9px] md:text-[10px] font-black uppercase text-slate-500">Cadera (Jurdan)</span></div><p class="text-[10px] md:text-xs font-bold text-slate-300 ml-6 md:ml-7 leading-tight" id="kin-cad">--</p></div>
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800"><div class="flex items-center gap-2 mb-1"><span class="text-base md:text-lg">⚖️</span> <span class="text-[9px] md:text-[10px] font-black uppercase text-slate-500">Unipodal</span></div><p class="text-[10px] md:text-xs font-bold text-slate-300 ml-6 md:ml-7 leading-tight" id="kin-uni">--</p></div>
+                                <div class="p-3 bg-slate-900 rounded-lg border border-slate-800"><div class="flex items-center gap-2 mb-1"><span class="text-base md:text-lg">🏋️</span> <span class="text-[9px] md:text-[10px] font-black uppercase text-slate-500">Sentadilla</span></div><p class="text-[10px] md:text-xs font-bold text-slate-300 ml-6 md:ml-7 leading-tight" id="kin-sen">--</p></div>
                             </div>
                             <div class="p-4 bg-slate-900/80 rounded-xl border border-slate-800">
-                                <h4 class="text-[10px] font-black uppercase text-purple-400 mb-3">Prescripción de Ejercicios (Warm-Up)</h4>
+                                <h4 class="text-[9px] md:text-[10px] font-black uppercase text-purple-400 mb-3">Prescripción de Ejercicios (Warm-Up)</h4>
                                 <div class="space-y-2 overflow-y-auto max-h-[200px] custom-scrollbar pr-2" id="ind-exercises"></div>
                             </div>
                         </div>
@@ -169,79 +173,73 @@
             </div>
         </section>
 
-        <!-- VISTA: NUTRICIÓN -->
         <section id="view-nutri" class="hidden space-y-6 animate-in fade-in duration-300">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 
-                <!-- Perfil Jugador Nutrición -->
                 <div class="lg:col-span-3">
-                    <div class="glass-panel p-6 sticky top-28 space-y-6">
+                    <div class="glass-panel p-5 md:p-6 sticky top-32 space-y-6">
                         <select id="nutri-player-select" onchange="renderNutri()" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm font-black focus:ring-2 focus:ring-emerald-500 appearance-none cursor-pointer text-club-yellow"></select>
                         
                         <div class="space-y-3 border-t border-slate-800 pt-6">
                             <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg">
-                                <span class="text-[10px] text-slate-500 font-bold uppercase">Edad</span>
+                                <span class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase">Edad</span>
                                 <span class="text-xs font-black text-slate-200" id="nutri-age">--</span>
                             </div>
                             <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg">
-                                <span class="text-[10px] text-slate-500 font-bold uppercase">Fecha Med.</span>
+                                <span class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase">Fecha Med.</span>
                                 <span class="text-xs font-black text-slate-200" id="nutri-date">--</span>
                             </div>
                             <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg">
-                                <span class="text-[10px] text-slate-500 font-bold uppercase">Peso Bruto</span>
+                                <span class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase">Peso Bruto</span>
                                 <span class="text-xs font-black text-slate-200" id="nutri-weight">--</span>
                             </div>
                             <div class="flex justify-between items-center p-2.5 bg-slate-900/50 rounded-lg">
-                                <span class="text-[10px] text-slate-500 font-bold uppercase">Talla Corporal</span>
+                                <span class="text-[9px] md:text-[10px] text-slate-500 font-bold uppercase">Talla Corporal</span>
                                 <span class="text-xs font-black text-slate-200" id="nutri-height">--</span>
                             </div>
                         </div>
 
                         <div class="p-4 border border-emerald-500/30 rounded-xl bg-emerald-900/10 mt-6">
-                            <h3 class="text-[10px] font-black uppercase text-emerald-500 mb-2">Plan Nutricional Activo</h3>
-                            <p class="text-[9px] text-slate-400 mb-4">Prescripción dietaria individual base.</p>
-                            <button onclick="openNutriModal()" class="w-full bg-slate-800 border border-slate-700 hover:bg-emerald-600 text-[10px] font-black uppercase py-2.5 rounded-lg transition-colors text-slate-300 hover:text-white cursor-pointer">Ver Plan Detallado</button>
+                            <h3 class="text-[9px] md:text-[10px] font-black uppercase text-emerald-500 mb-2">Plan Nutricional Activo</h3>
+                            <p class="text-[8px] md:text-[9px] text-slate-400 mb-4">Prescripción dietaria individual base.</p>
+                            <button onclick="openNutriModal()" class="w-full bg-slate-800 border border-slate-700 hover:bg-emerald-600 text-[9px] md:text-[10px] font-black uppercase py-2.5 rounded-lg transition-colors text-slate-300 hover:text-white cursor-pointer">Ver Plan Detallado</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Datos Nutrición -->
                 <div class="lg:col-span-9 space-y-6">
-                    
-                    <!-- KPI Principales -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="glass-panel p-6 border-l-4 border-l-club-green flex flex-col justify-center">
-                            <h4 class="text-[10px] font-black text-slate-400 uppercase">Σ6 Pliegues</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+                        <div class="glass-panel p-5 md:p-6 border-l-4 border-l-club-green flex flex-col justify-center">
+                            <h4 class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase">Σ6 Pliegues</h4>
                             <div class="flex items-end gap-2 mt-2">
-                                <span class="text-4xl font-black" id="nutri-sum6">--</span>
-                                <span class="text-xs font-bold text-slate-500 mb-1">mm</span>
+                                <span class="text-3xl md:text-4xl font-black" id="nutri-sum6">--</span>
+                                <span class="text-[10px] md:text-xs font-bold text-slate-500 mb-1">mm</span>
                             </div>
-                            <p class="text-[10px] font-black mt-2 text-slate-500">Vs Elite (50mm): <span id="nutri-sum6-dif">--</span></p>
+                            <p class="text-[9px] md:text-[10px] font-black mt-2 text-slate-500">Vs Elite (50mm): <span id="nutri-sum6-dif">--</span></p>
                         </div>
-                        <div class="glass-panel p-6">
-                            <h4 class="text-[10px] font-black text-slate-400 uppercase">Índice Cintura-Cadera</h4>
+                        <div class="glass-panel p-5 md:p-6 flex flex-col justify-center">
+                            <h4 class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase">Índice Cintura-Cadera</h4>
                             <div class="flex items-end gap-2 mt-2">
-                                <span class="text-3xl font-black text-slate-200" id="nutri-icc">--</span>
+                                <span class="text-2xl md:text-3xl font-black text-slate-200" id="nutri-icc">--</span>
                             </div>
                         </div>
-                        <div class="glass-panel p-6 bg-slate-900/50">
-                            <h4 class="text-[10px] font-black text-slate-400 uppercase mb-3">Métricas Estándar</h4>
+                        <div class="glass-panel p-5 md:p-6 bg-slate-900/50 flex flex-col justify-center">
+                            <h4 class="text-[9px] md:text-[10px] font-black text-slate-400 uppercase mb-3">Métricas Estándar</h4>
                             <div class="space-y-2">
-                                <div class="flex justify-between text-xs font-black"><span class="text-slate-500">Músculo (Bio):</span> <span class="text-slate-300" id="nutri-musc-bio">--</span></div>
-                                <div class="flex justify-between text-xs font-black"><span class="text-slate-500">Adiposidad (Bio):</span> <span class="text-slate-300" id="nutri-adip-bio">--</span></div>
+                                <div class="flex justify-between text-[10px] md:text-xs font-black"><span class="text-slate-500">Músculo (Bio):</span> <span class="text-slate-300" id="nutri-musc-bio">--</span></div>
+                                <div class="flex justify-between text-[10px] md:text-xs font-black"><span class="text-slate-500">Adiposidad (Bio):</span> <span class="text-slate-300" id="nutri-adip-bio">--</span></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Pliegues y Gráfico -->
-                    <div class="glass-panel p-6">
-                        <h3 class="text-xs font-black uppercase mb-6 border-b border-slate-800 pb-2 text-club-yellow">Análisis de Pliegues Cutáneos (mm)</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                            <div class="relative min-h-[300px]"><canvas id="chart-nutri-pliegues"></canvas></div>
-                            <div>
+                    <div class="glass-panel p-5 md:p-6">
+                        <h3 class="text-[10px] md:text-xs font-black uppercase mb-6 border-b border-slate-800 pb-2 text-club-yellow">Análisis de Pliegues Cutáneos (mm)</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-center">
+                            <div class="relative min-h-[250px] md:min-h-[300px]"><canvas id="chart-nutri-pliegues"></canvas></div>
+                            <div class="table-container">
                                 <table class="w-full text-left text-xs">
                                     <thead>
-                                        <tr class="text-[9px] uppercase text-slate-500 border-b border-slate-800">
+                                        <tr class="text-[8px] md:text-[9px] uppercase text-slate-500 border-b border-slate-800">
                                             <th class="py-2">Pliegue</th>
                                             <th class="py-2 text-center text-club-yellow">Valor</th>
                                             <th class="py-2 text-center text-slate-400">Prom. Equipo</th>
@@ -249,25 +247,24 @@
                                         </tr>
                                     </thead>
                                     <tbody class="font-black text-slate-200">
-                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Tríceps</td><td class="py-2 text-center" id="pl-tri">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-tri">--</td><td class="py-2 text-center text-emerald-500">6.0</td></tr>
-                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Subescapular</td><td class="py-2 text-center" id="pl-sub">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-sub">--</td><td class="py-2 text-center text-emerald-500">8.0</td></tr>
-                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Bíceps</td><td class="py-2 text-center" id="pl-bic">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-bic">--</td><td class="py-2 text-center text-emerald-500">4.0</td></tr>
-                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Cresta Ilíaca</td><td class="py-2 text-center" id="pl-cre">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-cre">--</td><td class="py-2 text-center text-emerald-500">8.0</td></tr>
-                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Supraespinal</td><td class="py-2 text-center" id="pl-sup">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-sup">--</td><td class="py-2 text-center text-emerald-500">6.0</td></tr>
-                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Abdominal</td><td class="py-2 text-center" id="pl-abd">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-abd">--</td><td class="py-2 text-center text-emerald-500">10.0</td></tr>
-                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[10px] text-slate-400 uppercase">Muslo Medial</td><td class="py-2 text-center" id="pl-mus">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-mus">--</td><td class="py-2 text-center text-emerald-500">10.0</td></tr>
-                                        <tr><td class="py-2 text-[10px] text-slate-400 uppercase">Pantorrilla Máx</td><td class="py-2 text-center" id="pl-pan">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-pan">--</td><td class="py-2 text-center text-emerald-500">6.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Tríceps</td><td class="py-2 text-center" id="pl-tri">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-tri">--</td><td class="py-2 text-center text-emerald-500">6.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Subescapular</td><td class="py-2 text-center" id="pl-sub">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-sub">--</td><td class="py-2 text-center text-emerald-500">8.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Bíceps</td><td class="py-2 text-center" id="pl-bic">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-bic">--</td><td class="py-2 text-center text-emerald-500">4.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Cresta Ilíaca</td><td class="py-2 text-center" id="pl-cre">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-cre">--</td><td class="py-2 text-center text-emerald-500">8.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Supraespinal</td><td class="py-2 text-center" id="pl-sup">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-sup">--</td><td class="py-2 text-center text-emerald-500">6.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Abdominal</td><td class="py-2 text-center" id="pl-abd">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-abd">--</td><td class="py-2 text-center text-emerald-500">10.0</td></tr>
+                                        <tr class="border-b border-slate-800/50"><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Muslo Medial</td><td class="py-2 text-center" id="pl-mus">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-mus">--</td><td class="py-2 text-center text-emerald-500">10.0</td></tr>
+                                        <tr><td class="py-2 text-[9px] md:text-[10px] text-slate-400 uppercase">Pantorrilla Máx</td><td class="py-2 text-center" id="pl-pan">--</td><td class="py-2 text-center text-slate-400" id="pl-eq-pan">--</td><td class="py-2 text-center text-emerald-500">6.0</td></tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Perímetros y Diámetros -->
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="glass-panel p-6">
-                            <h3 class="text-[10px] font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-400">Perímetros (cm)</h3>
-                            <div class="space-y-3 font-black text-xs">
+                        <div class="glass-panel p-5 md:p-6">
+                            <h3 class="text-[9px] md:text-[10px] font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-400">Perímetros (cm)</h3>
+                            <div class="space-y-3 font-black text-[10px] md:text-xs">
                                 <div class="flex justify-between border-b border-slate-800/50 pb-2"><span class="text-slate-500">Brazo Relajado</span> <span class="text-slate-200" id="per-bra-r">--</span></div>
                                 <div class="flex justify-between border-b border-slate-800/50 pb-2"><span class="text-slate-500">Brazo Flex/Tensión</span> <span class="text-slate-200" id="per-bra-f">--</span></div>
                                 <div class="flex justify-between border-b border-slate-800/50 pb-2"><span class="text-slate-500">Cintura (mínima)</span> <span class="text-slate-200" id="per-cin">--</span></div>
@@ -275,9 +272,9 @@
                                 <div class="flex justify-between"><span class="text-slate-500">Pantorrilla (máxima)</span> <span class="text-slate-200" id="per-pan">--</span></div>
                             </div>
                         </div>
-                        <div class="glass-panel p-6">
-                            <h3 class="text-[10px] font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-400">Diámetros (cm)</h3>
-                            <div class="space-y-3 font-black text-xs">
+                        <div class="glass-panel p-5 md:p-6">
+                            <h3 class="text-[9px] md:text-[10px] font-black uppercase mb-4 border-b border-slate-800 pb-2 text-slate-400">Diámetros (cm)</h3>
+                            <div class="space-y-3 font-black text-[10px] md:text-xs">
                                 <div class="flex justify-between border-b border-slate-800/50 pb-2"><span class="text-slate-500">Humeral</span> <span class="text-slate-200" id="dia-hum">--</span></div>
                                 <div class="flex justify-between"><span class="text-slate-500">Femoral</span> <span class="text-slate-200" id="dia-fem">--</span></div>
                             </div>
@@ -288,43 +285,39 @@
             </div>
         </section>
 
-        <!-- VISTA: EQUIPO -->
         <section id="view-general" class="hidden space-y-6 animate-in fade-in duration-300">
-            <!-- (Contenido equipo previo intacto y comprimido) -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                <div class="glass-panel p-6 border-l-4 border-l-emerald-500"><h4 class="text-[10px] font-black text-slate-400 uppercase">Media Muscular</h4><div class="flex items-end gap-2 mt-2"><span class="text-3xl font-black text-emerald-400" id="stat-musc">--</span><span class="text-xs font-bold text-slate-500 mb-1">vs 48% Elite</span></div></div>
-                <div class="glass-panel p-6 border-l-4 border-l-amber-500"><h4 class="text-[10px] font-black text-slate-400 uppercase">Media Adiposa</h4><div class="flex items-end gap-2 mt-2"><span class="text-3xl font-black text-amber-400" id="stat-adip">--</span><span class="text-xs font-bold text-slate-500 mb-1">vs 11% Elite</span></div></div>
-                <div class="glass-panel p-6 border-l-4 border-l-club-green"><h4 class="text-[10px] font-black text-slate-400 uppercase">Media Yo-Yo 2026</h4><div class="flex items-end gap-2 mt-2"><span class="text-3xl font-black text-club-green" id="stat-yoyo">--</span><span class="text-xs font-bold text-slate-500 mb-1">vs 21.0 Elite</span></div></div>
-                <div class="glass-panel p-6 border-l-4 border-l-red-500"><h4 class="text-[10px] font-black text-slate-400 uppercase">Jugadores Críticos</h4><div class="flex items-end gap-2 mt-2"><span class="text-3xl font-black text-red-500" id="stat-alerts">--</span><span class="text-xs font-bold text-slate-500 mb-1">Asim>15 / Adip>18</span></div></div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+                <div class="glass-panel p-4 md:p-6 border-l-4 border-l-emerald-500"><h4 class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase leading-tight">Media Muscular</h4><div class="flex items-end gap-1 md:gap-2 mt-2"><span class="text-xl md:text-3xl font-black text-emerald-400" id="stat-musc">--</span><span class="text-[9px] md:text-xs font-bold text-slate-500 mb-0.5 md:mb-1">vs 48%</span></div></div>
+                <div class="glass-panel p-4 md:p-6 border-l-4 border-l-amber-500"><h4 class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase leading-tight">Media Adiposa</h4><div class="flex items-end gap-1 md:gap-2 mt-2"><span class="text-xl md:text-3xl font-black text-amber-400" id="stat-adip">--</span><span class="text-[9px] md:text-xs font-bold text-slate-500 mb-0.5 md:mb-1">vs 11%</span></div></div>
+                <div class="glass-panel p-4 md:p-6 border-l-4 border-l-club-green"><h4 class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase leading-tight">Media Yo-Yo 2026</h4><div class="flex items-end gap-1 md:gap-2 mt-2"><span class="text-xl md:text-3xl font-black text-club-green" id="stat-yoyo">--</span><span class="text-[9px] md:text-xs font-bold text-slate-500 mb-0.5 md:mb-1">vs 21.0</span></div></div>
+                <div class="glass-panel p-4 md:p-6 border-l-4 border-l-red-500"><h4 class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase leading-tight">Alertas Críticos</h4><div class="flex items-end gap-1 md:gap-2 mt-2"><span class="text-xl md:text-3xl font-black text-red-500" id="stat-alerts">--</span><span class="text-[9px] md:text-xs font-bold text-slate-500 mb-0.5 md:mb-1">Asim/Adip</span></div></div>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="glass-panel p-6 space-y-6">
-                    <div><h3 class="text-[10px] font-black uppercase text-club-yellow border-b border-slate-800 pb-2 mb-3">Top 3 Potencia (CMJ)</h3><div id="top-cmj" class="space-y-2"></div></div>
-                    <div><h3 class="text-[10px] font-black uppercase text-club-green border-b border-slate-800 pb-2 mb-3">Top 3 Resistencia (Yo-Yo)</h3><div id="top-yoyo" class="space-y-2"></div></div>
-                    <div><h3 class="text-[10px] font-black uppercase text-emerald-500 border-b border-slate-800 pb-2 mb-3">Top 3 Nutrición (Σ6 Mínimo)</h3><div id="top-nutri" class="space-y-2"></div></div>
+                <div class="glass-panel p-5 md:p-6 space-y-6">
+                    <div><h3 class="text-[9px] md:text-[10px] font-black uppercase text-club-yellow border-b border-slate-800 pb-2 mb-3">Top 3 Potencia (CMJ)</h3><div id="top-cmj" class="flex flex-col gap-2"></div></div>
+                    <div><h3 class="text-[9px] md:text-[10px] font-black uppercase text-club-green border-b border-slate-800 pb-2 mb-3">Top 3 Resistencia (Yo-Yo)</h3><div id="top-yoyo" class="flex flex-col gap-2"></div></div>
+                    <div><h3 class="text-[9px] md:text-[10px] font-black uppercase text-emerald-500 border-b border-slate-800 pb-2 mb-3">Top 3 Nutrición (Σ6 Mínimo)</h3><div id="top-nutri" class="flex flex-col gap-2"></div></div>
                 </div>
                 <div class="lg:col-span-2 space-y-6">
-                    <div class="glass-panel p-6 border border-red-900/30"><h3 class="text-xs font-black uppercase text-red-500 mb-4">Atención Crítica (Asim > 15%, Adip > 18% o Σ6 > 60mm)</h3><div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="critical-list"></div></div>
-                    <div class="glass-panel p-6"><h3 class="text-xs font-black uppercase mb-4 text-slate-300">Rendimiento por Posición vs. Ideal Elite</h3><div class="h-64 relative"><canvas id="chart-team-pos"></canvas></div></div>
+                    <div class="glass-panel p-5 md:p-6 border border-red-900/30"><h3 class="text-[10px] md:text-xs font-black uppercase text-red-500 mb-4">Atención Crítica (Asim > 15%, Adip > 18% o Σ6 > 60mm)</h3><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" id="critical-list"></div></div>
+                    <div class="glass-panel p-5 md:p-6"><h3 class="text-[10px] md:text-xs font-black uppercase mb-4 text-slate-300">Rendimiento por Posición vs. Ideal Elite</h3><div class="min-h-[250px] relative"><canvas id="chart-team-pos"></canvas></div></div>
                 </div>
             </div>
         </section>
 
-        <!-- VISTA: MULTI-COMPARE -->
         <section id="view-compare" class="hidden space-y-6 animate-in fade-in duration-300">
-            <!-- (Contenido compare previo intacto y comprimido) -->
-            <div class="glass-panel p-6">
-                <h2 class="text-xl font-black uppercase italic tracking-tighter mb-6 text-club-green">Comparativa Multijugador (Staff)</h2>
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <div class="p-2 rounded-xl border-t-4 border-t-[#10b981] bg-slate-900"><select id="comp-1" onchange="renderCompare()" class="w-full bg-transparent text-xs font-black uppercase focus:outline-none"></select></div>
-                    <div class="p-2 rounded-xl border-t-4 border-t-[#f59e0b] bg-slate-900"><select id="comp-2" onchange="renderCompare()" class="w-full bg-transparent text-xs font-black uppercase focus:outline-none"></select></div>
-                    <div class="p-2 rounded-xl border-t-4 border-t-[#3b82f6] bg-slate-900"><select id="comp-3" onchange="renderCompare()" class="w-full bg-transparent text-xs font-black uppercase focus:outline-none"></select></div>
-                    <div class="p-2 rounded-xl border-t-4 border-t-[#8b5cf6] bg-slate-900"><select id="comp-4" onchange="renderCompare()" class="w-full bg-transparent text-xs font-black uppercase focus:outline-none"></select></div>
+            <div class="glass-panel p-4 md:p-6">
+                <h2 class="text-lg md:text-xl font-black uppercase italic tracking-tighter mb-4 md:mb-6 text-club-green">Comparativa Multijugador (Staff)</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-6 md:mb-8">
+                    <div class="p-1.5 md:p-2 rounded-xl border-t-4 border-t-[#10b981] bg-slate-900"><select id="comp-1" onchange="renderCompare()" class="w-full bg-transparent text-[10px] md:text-xs font-black uppercase focus:outline-none"></select></div>
+                    <div class="p-1.5 md:p-2 rounded-xl border-t-4 border-t-[#f59e0b] bg-slate-900"><select id="comp-2" onchange="renderCompare()" class="w-full bg-transparent text-[10px] md:text-xs font-black uppercase focus:outline-none"></select></div>
+                    <div class="p-1.5 md:p-2 rounded-xl border-t-4 border-t-[#3b82f6] bg-slate-900"><select id="comp-3" onchange="renderCompare()" class="w-full bg-transparent text-[10px] md:text-xs font-black uppercase focus:outline-none"></select></div>
+                    <div class="p-1.5 md:p-2 rounded-xl border-t-4 border-t-[#8b5cf6] bg-slate-900"><select id="comp-4" onchange="renderCompare()" class="w-full bg-transparent text-[10px] md:text-xs font-black uppercase focus:outline-none"></select></div>
                 </div>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-slate-900/50 rounded-2xl p-6 border border-slate-800"><h3 class="text-[10px] font-black uppercase text-slate-400 mb-4">Potencia (CMJ & Broad)</h3><div class="h-64 relative"><canvas id="chart-comp-power"></canvas></div></div>
-                    <div class="bg-slate-900/50 rounded-2xl p-6 border border-slate-800"><h3 class="text-[10px] font-black uppercase text-slate-400 mb-4">Composición (%Musc & Σ6 Pliegues)</h3><div class="h-64 relative"><canvas id="chart-comp-comp"></canvas></div></div>
-                    <div class="bg-slate-900/50 rounded-2xl p-6 border border-slate-800 lg:col-span-2"><h3 class="text-[10px] font-black uppercase text-slate-400 mb-4">Resistencia (Yo-Yo Test)</h3><div class="h-48 relative"><canvas id="chart-comp-yoyo"></canvas></div></div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+                    <div class="bg-slate-900/50 rounded-2xl p-4 md:p-6 border border-slate-800"><h3 class="text-[9px] md:text-[10px] font-black uppercase text-slate-400 mb-4">Potencia (CMJ & Broad)</h3><div class="min-h-[250px] relative"><canvas id="chart-comp-power"></canvas></div></div>
+                    <div class="bg-slate-900/50 rounded-2xl p-4 md:p-6 border border-slate-800"><h3 class="text-[9px] md:text-[10px] font-black uppercase text-slate-400 mb-4">Composición (%Musc & Σ6 Pliegues)</h3><div class="min-h-[250px] relative"><canvas id="chart-comp-comp"></canvas></div></div>
+                    <div class="bg-slate-900/50 rounded-2xl p-4 md:p-6 border border-slate-800 lg:col-span-2"><h3 class="text-[9px] md:text-[10px] font-black uppercase text-slate-400 mb-4">Resistencia (Yo-Yo Test)</h3><div class="min-h-[200px] md:min-h-[250px] relative"><canvas id="chart-comp-yoyo"></canvas></div></div>
                 </div>
             </div>
         </section>
@@ -332,7 +325,6 @@
     </main>
 
     <script>
-        // DB Inicial Física
         let playersData = [
             { id: 1, name: "Alberto, Joaquin", pos: "Cierre", leg: "Derecho", date: "2026-02-07", weight: 68.3, height: 1.77, musc: 45.2, adip: 11.8, visc: 4, imc: 21.8, ed_met: 21, y25: 20.0, y26: 20.8, cmj: 44.1, abk: 59.3, cmj_de: 25.5, cmj_iz: 24.6, asym_cmj: -3.52, broad: 2.58, broad_de: 2.13, broad_iz: 2.2, asym_br: 3.28, kin: { t: "Movilidad optima", c: "reducir tension isquiosural", u: "poca estabilidad", s: "Buena profundidad y movilidad" } },
             { id: 2, name: "Arzani, Ramiro", pos: "Arquero", leg: "Izquierda", date: "2026-02-07", weight: 75.8, height: 1.77, musc: 41.8, adip: 17.3, visc: 6, imc: 24.5, ed_met: 34, y25: 18.0, y26: 18.1, cmj: 45.3, abk: 52.8, cmj_de: 28.2, cmj_iz: 24.6, asym_cmj: -12.77, broad: 2.46, broad_de: 2.35, broad_iz: 2.1, asym_br: -10.64, kin: { t: "mejorar movilidad", c: "reducir tension isquiosural", u: "buena movilidad y estabilidad", s: "mejorar movilidad tobillo" } },
@@ -359,7 +351,6 @@
             { id: 25, name: "Mack, Ramiro", pos: "Pivot", leg: "Izquierda", date: "2026-02-07", weight: 92.2, height: 1.85, musc: 39.6, adip: 20.7, visc: 7, imc: 26.9, ed_met: 50, y25: 18.1, y26: 18.1, cmj: 33.2, abk: 37.4, cmj_de: 16.7, cmj_iz: 11.9, asym_cmj: -28.74, broad: 2.33, broad_de: 2, broad_iz: 1.86, asym_br: -7, kin: { t: "mejorar movilidad", c: "Rom optimo +90", u: "trabajar estabilidad pelvica/cadera", s: "tobillo/escapular" } }
         ];
 
-        // Parser DB Nutrición In-Memory
         const rawNutriCSV = `Alberto, Joaquin;21,6;2/6/2026;1;68,700;167,000;;;30,600;34,500;;;35,200;7,000;7,000;;7,000;6,000;7,000;10,000;5,000;42,000;sin datos;50;-8,000
 Almiron, Agustin;18,2;2/13/2026;1;64,900;177,000;;;29,100;31,600;;;37,400;6,000;7,000;;7,000;6,000;6,000;9,000;8,000;42,000;sin datos;50;-8,000
 Arzani, Ramiro;24,8;2/6/2026;1;75,200;176,000;;;30,200;34,300;;;39,000;7,000;12,000;;13,000;12,000;15,000;7,000;5,000;58,000;sin datos;50;8,000
@@ -382,9 +373,7 @@ Silva, Thiago;20,5;2/6/2026;1;84,700;180,000;;;30,000;34,200;;;39,200;7,000;12,0
 Smokvina, Ignacio;20,9;06/02/26;1;69,800;173,000;;;28,500;33,400;;;36,000;9,000;10,000;;10,000;12,000;13,000;9,500;6,000;59,500;sin datos;50;9,500
 Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,000;7,000;;12,000;7,000;8,000;9,500;6,000;43,500;sin datos;50;-6,500`;
 
-        // DB In-Memory Prescripciones Dietarias
         const PLANES_NUTRICIONALES = {
-            // ALBERTO
             1: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -403,18 +392,8 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                         <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded">200g carnes + 1 huevo + 250g vegetales C / fideos / pastas (1 plato playo) + 150g vegetal A + 250g vegetal B + 150g fruta + 10cc Aceite.</p>
                         <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa al horno + ensalada de papa, tomate y huevo.</p>
                     </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Recomendaciones Generales</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>Preferir cereales integrales y cortes de carne magros (retirar grasa visible).</li>
-                            <li>Evitar frituras. Usar métodos de cocción al horno, vapor, plancha, parrilla o cacerola.</li>
-                            <li>Evitar consumo frecuente: manteca, crema, dulce de leche, facturas, tortas, bizcochos, helados, chocolates, alfajores, golosinas, gaseosas, snacks, hamburguesas, panchos, aderezos comerciales, fiambres, embutidos.</li>
-                            <li class="text-club-yellow font-bold">Límite: 3 huevos diarios.</li>
-                        </ul>
-                    </div>
                 </div>
             `,
-            // ARZANI
             2: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -432,17 +411,8 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                         <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
                         <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes (mediana) + 1 huevo + 250g vegetales C / fideos / pastas + 150g vegetal A (1 mediano o 2 chicos) + 250g vegetal B (1 grande o 2 medianos) + 200g fruta + 15cc Aceite.</p>
                     </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Recomendaciones y Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>Cereales integrales y carnes magras sin grasa visible. Evitar frituras y ultraprocesados.</li>
-                            <li class="text-club-yellow font-bold">Límite: 3 huevos por día + claras si es necesario (2 o 3).</li>
-                            <li class="text-club-green font-bold">2 frutas grandes por día.</li>
-                        </ul>
-                    </div>
                 </div>
             `,
-            // BENITEZ
             3: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -461,11 +431,9 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
                         <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
                         <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
-                        <p class="text-xs text-slate-400 italic">Ejemplo: Pollo + papa + ensalada de tomate, remolacha y zanahoria. Fruta.</p>
                     </div>
                 </div>
             `,
-            // CABRERA
             4: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -481,17 +449,8 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                         <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
                         <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes (mediano) + 1 huevo (solo en 1 comida o 2) + 250g veg C/fideos (1 plato playo) + 100g veg A (chico) + 250g veg B (mediano) + 150g fruta (si no se consume en des/mer) + Aceite 10cc</p>
                     </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones y Objetivos</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>Límite: 2 huevos por día en total + claras libres.</li>
-                            <li>2 frutas grandes por día.</li>
-                            <li class="text-club-yellow font-bold">Realizar 4 comidas completas. Priorizar almuerzo y merienda pre entrenamiento.</li>
-                        </ul>
-                    </div>
                 </div>
             `,
-            // DEL PALACIO
             5: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -507,17 +466,8 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                         <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
                         <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes (mediano) + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A (1 mediano o 2 chicos) + 250g veg B (1 grande o 2 medianos) + 150g fruta + Aceite 10cc</p>
                     </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Recomendaciones y Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>Límite: 2 huevos al día en total (agregar 2 claras si es necesario).</li>
-                            <li>2 frutas grandes por día o 3 frutas medianas.</li>
-                            <li>Evitar frituras, ultraprocesados, fiambres.</li>
-                        </ul>
-                    </div>
                 </div>
             `,
-            // FIGUEROA
             6: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -535,307 +485,6 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                     </div>
                 </div>
             `,
-            // GONZI
-            9: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (70g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>1 taza de café con 200cc leche descremada + 10g azúcar + 2 rodajas (50g) pan integral + 30g queso untable + 30g mermelada light</li>
-                            <li>200cc yogur descremado + 1 tostado de queso (2 pan integral + 60g queso fresco light)</li>
-                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
-                            <li>200cc yogur + 2 o 3 vainillas + 1 fruta mediana</li>
-                            <li>1 taza café con 200cc leche descremada + 10g azúcar + 2 rodajas pan integral + 1 huevo revuelto + 2/3 claras + 1 fruta mediana</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A (mediana) + 250g veg B (grande) + 200g fruta (med/gde) + Aceite 10cc</p>
-                    </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>3 huevos por día en total + claras si es necesario (2 o 3).</li>
-                            <li>2 frutas grandes o 3 medianas por día.</li>
-                        </ul>
-                    </div>
-                </div>
-            `,
-            // GREGORIO
-            10: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
-                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
-                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
-                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
-                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso + 60g dulce membrillo/batata) + 1 fruta mediana</li>
-                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo y claras revueltas + 1 fruta grande</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas (1 plato hondo) + 150g veg A (mediana) + 250g veg B (grande) + 200g fruta (med/gde) + Aceite 10cc</p>
-                    </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li class="text-club-yellow font-bold">4 huevos por día en total + claras si es necesario.</li>
-                        </ul>
-                    </div>
-                </div>
-            `,
-            // GUTIERREZ
-            11: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>1 taza de café con 200cc leche descremada + 2 rodajas (50g) pan integral + 30g mermelada light</li>
-                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
-                            <li>200cc infusión con leche o yogur + 2 rodajas pan integral + 1 huevo y claras revueltas (o 2 huevos)</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 200g veg C/fideos/pastas + 150g veg A + 250g veg B + 150g fruta + Aceite 10cc</p>
-                        <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa mediana + puré de papa + ensalada zanahoria, remolacha, tomate. Fruta.</p>
-                    </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>Un huevo por comida o los 2 en una sola. Elegir opción.</li>
-                        </ul>
-                    </div>
-                </div>
-            `,
-            // BENQUET
-            21: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>200ml leche o yogur + 60g vainillas (3) + 20g azúcar + 200g fruta</li>
-                            <li>Licuado (200 leche + 200 fruta + 20 azúcar) + 60g vainillas (3)</li>
-                            <li>200ml leche + 20g azúcar (o 200 yogur) + 75g pan (3) + 60g queso + 60g mermelada + 200g fruta</li>
-                            <li>300cc yogur + 3 puñados granola o 2 frutos secos + 200g fruta</li>
-                            <li>Mate + 3 tostadas pan integral + 1 huevo y claras + 200 fruta + 1 puñado frutos secos</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (150g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 1 huevo + 250g veg C/fideos/pastas + 200g veg A + 250g veg B + Aceite 15cc.</p>
-                        <p class="text-xs text-slate-400 italic">Nota: Si no consumió fruta en des/mer, agregar 1 fruta mediana.</p>
-                    </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Objetivos del Mes</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li class="text-club-yellow font-bold">Organizar compras para poder llevar comida durante el día y evitar comer afuera.</li>
-                        </ul>
-                    </div>
-                </div>
-            `,
-            // ALMIRON
-            22: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) de pan integral + 30g de queso untable descremado + 30g de mermelada light</li>
-                            <li>200cc de yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco tipo port salud light)</li>
-                            <li>200cc de yogur descremado + 60g de granola + 100g fruta</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g de carnes + 1 huevo + 300g de veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
-                        <p class="text-xs text-slate-400 italic">Ejemplo: Milanesa + ensalada de papa y huevo + ensalada de zanahoria y tomate. Fruta.</p>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
-                        <p class="text-xs text-slate-400 italic">Ejemplo: Pollo + papa + ensalada de tomate, remolacha y zanahoria. Fruta.</p>
-                    </div>
-                </div>
-            `,
-            // MACK
-            25: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
-                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
-                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
-                    </div>
-                </div>
-            `,
-            // PERVIU
-            23: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
-                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
-                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
-                    </div>
-                </div>
-            `,
-            // QUIROGA
-            14: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
-                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
-                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas de pan integral + 30g queso + 30g mermelada + 300g fruta</li>
-                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
-                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce compacto) + 1 fruta mediana</li>
-                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo + claras revuelto + 1 fruta grande</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g de carnes + 1 huevo + 300g de veg C/fideos/pastas (1 plato hondo) + 150g veg A + 250g veg B + 150g fruta + Aceite 15cc</p>
-                    </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>3 huevos por día en total + claras de ser necesario (2 a 3).</li>
-                            <li>2 frutas grandes por día o 3 medianas.</li>
-                            <li class="text-club-yellow font-bold">Queso y dulce: se puede usar como postre o en des/mer (60g de c/u).</li>
-                        </ul>
-                    </div>
-                </div>
-            `,
-            // RUMAK
-            16: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (70g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
-                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
-                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
-                            <li>1 taza de café con 200cc leche descremada + 10g azúcar + 2 rodajas pan integral + 1 huevo revuelto + 2-3 claras + 1 fruta mediana</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 1 huevo + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A + 250g veg B + 200g fruta + Aceite 15cc</p>
-                    </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>3 huevos por día + claras de ser necesario (entre 2 a 3).</li>
-                            <li>2 frutas grandes por día o 3 medianas.</li>
-                            <li class="text-club-yellow font-bold">No es necesario desayunar si no estás acostumbrado, priorizar almuerzo y merienda.</li>
-                        </ul>
-                    </div>
-                </div>
-            `,
-            // SILVA
-            17: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable + 30g mermelada light</li>
-                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
-                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
-                            <li>1 taza de café con 200cc leche descremada + 2 rodajas pan integral + 1 huevo revuelto + claras</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (150g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 250g veg C/fideos/pastas (1 plato playo) + 200g veg A + 300g veg B + 1 fruta mediana + Aceite 10cc</p>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (100g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">100g carnes + 1 huevo + 250g veg C/fideos/pastas + 100g veg A + 250g veg B + 1 fruta mediana + Aceite 10cc</p>
-                    </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>2 huevos por día + claras de ser necesario (2 o 3 claras).</li>
-                            <li>2 frutas grandes por día o 3 medianas.</li>
-                            <li class="text-club-yellow font-bold">Empezar de a poco a realizar las 4 comidas. Incorporar variedad de verduras.</li>
-                        </ul>
-                    </div>
-                </div>
-            `,
-            // SMOKVINA
-            18: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
-                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
-                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
-                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
-                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce compacto) + 1 fruta mediana</li>
-                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo + claras revuelto + 1 fruta grande</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo (opcional) + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A + 250g veg B + 200g fruta + Aceite 10cc</p>
-                    </div>
-                    <div class="p-4 bg-emerald-900/10 rounded-xl border border-emerald-500/30">
-                        <h3 class="text-emerald-500 font-black uppercase mb-3 border-b border-emerald-500/30 pb-2">Suplementación y Aclaraciones</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>3 huevos por día en total + claras si es necesario (hasta 2 o 3).</li>
-                            <li>2 frutas grandes o 3 medianas por día.</li>
-                            <li class="text-club-yellow font-bold text-sm">Creatina: 1 medida de 5g / día (reemplazar proteína por monohidrato de creatina).</li>
-                        </ul>
-                    </div>
-                </div>
-            `,
-            // STANIZZI
-            24: `
-                <div class="space-y-6">
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
-                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
-                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
-                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
-                        </ul>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
-                    </div>
-                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
-                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
-                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
-                    </div>
-                </div>
-            `,
-            // FIOCCHI
             7: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -856,7 +505,6 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                     </div>
                 </div>
             `,
-            // GARDIOL
             8: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -874,7 +522,78 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                     </div>
                 </div>
             `,
-            // RECHE
+            9: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (70g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc leche descremada + 10g azúcar + 2 rodajas (50g) pan integral + 30g queso untable + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                            <li>200cc yogur + 2 o 3 vainillas + 1 fruta mediana</li>
+                            <li>1 taza café con 200cc leche descremada + 10g azúcar + 2 rodajas pan integral + 1 huevo revuelto + 2/3 claras + 1 fruta mediana</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A (mediana) + 250g veg B (grande) + 200g fruta (med/gde) + Aceite 10cc</p>
+                    </div>
+                </div>
+            `,
+            10: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso + 60g dulce membrillo/batata) + 1 fruta mediana</li>
+                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo y claras revueltas + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas (1 plato hondo) + 150g veg A (mediana) + 250g veg B (grande) + 200g fruta (med/gde) + Aceite 10cc</p>
+                    </div>
+                </div>
+            `,
+            11: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc leche descremada + 2 rodajas (50g) pan integral + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                            <li>200cc infusión con leche o yogur + 2 rodajas pan integral + 1 huevo y claras revueltas (o 2 huevos)</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 200g veg C/fideos/pastas + 150g veg A + 250g veg B + 150g fruta + Aceite 10cc</p>
+                    </div>
+                </div>
+            `,
+            14: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas de pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce compacto) + 1 fruta mediana</li>
+                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo + claras revuelto + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g de carnes + 1 huevo + 300g de veg C/fideos/pastas (1 plato hondo) + 150g veg A + 250g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
             15: `
                 <div class="space-y-6">
                     <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
@@ -891,6 +610,162 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                         <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 1 huevo + 300g veg C/fideos/pastas + 200g veg A + 250g veg B + 150g fruta + Aceite 10cc</p>
                     </div>
                 </div>
+            `,
+            16: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (70g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                            <li>1 taza de café con 200cc leche descremada + 10g azúcar + 2 rodajas pan integral + 1 huevo revuelto + 2-3 claras + 1 fruta mediana</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 1 huevo + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A + 250g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
+            17: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                            <li>1 taza de café con 200cc leche descremada + 2 rodajas pan integral + 1 huevo revuelto + claras</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 250g veg C/fideos/pastas (1 plato playo) + 200g veg A + 300g veg B + 1 fruta mediana + Aceite 10cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">100g carnes + 1 huevo + 250g veg C/fideos/pastas + 100g veg A + 250g veg B + 1 fruta mediana + Aceite 10cc</p>
+                    </div>
+                </div>
+            `,
+            18: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche + 60g vainillas (3) + 10g azúcar + 200g fruta</li>
+                            <li>Licuado (200 leche + 200 fruta + 10 azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 10g azúcar (o 200 yogur) + 3 rodajas pan integral + 30g queso + 30g mermelada + 300g fruta</li>
+                            <li>200cc yogur + 3 puñados granola + 1 puñado frutos secos + 1 fruta grande</li>
+                            <li>Café con leche (200cc) + 10g azúcar + sándwich (60g queso fresco + 60g dulce compacto) + 1 fruta mediana</li>
+                            <li>Café con leche (200cc) + 10g azúcar + 3 rodajas pan integral con 1 huevo + claras revuelto + 1 fruta grande</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos y Cenas (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo (opcional) + 250g veg C/fideos/pastas (1 plato playo) + 150g veg A + 250g veg B + 200g fruta + Aceite 10cc</p>
+                    </div>
+                </div>
+            `,
+            21: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (100g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>200ml leche o yogur + 60g vainillas (3) + 20g azúcar + 200g fruta</li>
+                            <li>Licuado (200 leche + 200 fruta + 20 azúcar) + 60g vainillas (3)</li>
+                            <li>200ml leche + 20g azúcar (o 200 yogur) + 75g pan (3) + 60g queso + 60g mermelada + 200g fruta</li>
+                            <li>300cc yogur + 3 puñados granola o 2 frutos secos + 200g fruta</li>
+                            <li>Mate + 3 tostadas pan integral + 1 huevo y claras + 200 fruta + 1 puñado frutos secos</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (150g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">150g carnes + 1 huevo + 250g veg C/fideos/pastas + 200g veg A + 250g veg B + Aceite 15cc.</p>
+                        <p class="text-xs text-slate-400 italic">Nota: Si no consumió fruta en des/mer, agregar 1 fruta mediana.</p>
+                    </div>
+                </div>
+            `,
+            22: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) de pan integral + 30g de queso untable descremado + 30g de mermelada light</li>
+                            <li>200cc de yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco tipo port salud light)</li>
+                            <li>200cc de yogur descremado + 60g de granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g de carnes + 1 huevo + 300g de veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
+            23: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
+            24: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
+            `,
+            25: `
+                <div class="space-y-6">
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-yellow font-black uppercase mb-3 border-b border-slate-800 pb-2">Desayunos y Meriendas (50g HC)</h3>
+                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-xs">
+                            <li>1 taza de café con 200cc de leche descremada + 2 rodajas (50g) pan integral + 30g queso untable descremado + 30g mermelada light</li>
+                            <li>200cc yogur descremado + 1 tostado de queso (2 rodajas pan integral + 60g queso fresco light)</li>
+                            <li>200cc yogur descremado + 60g granola + 100g fruta</li>
+                        </ul>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Almuerzos (100g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g carnes + 1 huevo + 300g veg C/fideos/pastas + 100g veg A + 200g veg B + 150g fruta + Aceite 15cc</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 rounded-xl border border-slate-800">
+                        <h3 class="text-club-green font-black uppercase mb-3 border-b border-slate-800 pb-2">Cenas (75g HC)</h3>
+                        <p class="mb-3 text-white font-bold bg-slate-800 p-3 rounded text-xs">200g pollo + 200g veg C + 200g veg A + 100g veg B + 200g fruta + Aceite 15cc</p>
+                    </div>
+                </div>
             `
         };
 
@@ -899,36 +774,18 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             lines.forEach(line => {
                 if(!line.trim()) return;
                 const cols = line.split(';');
-                // Limpieza de floats argentinos (,) a ingleses (.)
                 const pFloat = (v) => v && v.trim() ? parseFloat(v.replace(',','.')) : null;
                 
                 const n = cols[0].trim().toLowerCase();
-                // Búsqueda aproximada por apellido,nombre
                 let player = playersData.find(p => p.name.toLowerCase().includes(n.split(',')[0].trim()));
                 if(player) {
                     player.nutri = {
-                        age: pFloat(cols[1]),
-                        date: cols[2],
-                        peso_bruto: pFloat(cols[4]),
-                        talla_cor: pFloat(cols[5]),
-                        diam_hum: pFloat(cols[6]),
-                        diam_fem: pFloat(cols[7]),
-                        per_bra_r: pFloat(cols[8]),
-                        per_bra_f: pFloat(cols[9]),
-                        per_cin: pFloat(cols[10]),
-                        per_cad: pFloat(cols[11]),
-                        per_pan: pFloat(cols[12]),
-                        pl_tri: pFloat(cols[13]),
-                        pl_sub: pFloat(cols[14]),
-                        pl_bic: pFloat(cols[15]),
-                        pl_cre: pFloat(cols[16]),
-                        pl_sup: pFloat(cols[17]),
-                        pl_abd: pFloat(cols[18]),
-                        pl_mus: pFloat(cols[19]),
-                        pl_pan: pFloat(cols[20]),
-                        sum6: pFloat(cols[21]),
-                        icc: cols[22].trim() === "sin datos" ? null : pFloat(cols[22]),
-                        elite_dif: pFloat(cols[24])
+                        age: pFloat(cols[1]), date: cols[2], peso_bruto: pFloat(cols[4]), talla_cor: pFloat(cols[5]),
+                        diam_hum: pFloat(cols[6]), diam_fem: pFloat(cols[7]), per_bra_r: pFloat(cols[8]), per_bra_f: pFloat(cols[9]),
+                        per_cin: pFloat(cols[10]), per_cad: pFloat(cols[11]), per_pan: pFloat(cols[12]), pl_tri: pFloat(cols[13]),
+                        pl_sub: pFloat(cols[14]), pl_bic: pFloat(cols[15]), pl_cre: pFloat(cols[16]), pl_sup: pFloat(cols[17]),
+                        pl_abd: pFloat(cols[18]), pl_mus: pFloat(cols[19]), pl_pan: pFloat(cols[20]), sum6: pFloat(cols[21]),
+                        icc: cols[22].trim() === "sin datos" ? null : pFloat(cols[22]), elite_dif: pFloat(cols[24])
                     };
                 }
             });
@@ -1004,7 +861,7 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             if(view === 'general') renderGeneral();
             if(view === 'individual') renderIndividual();
             if(view === 'nutri') renderNutri();
-            if(view === 'compare') renderCompare();
+            if(view === 'compare') renderCompare(false);
         }
 
         function getAvg(arr, key, isNutri = false) {
@@ -1025,20 +882,20 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             document.getElementById('stat-alerts').innerText = criticos.length;
 
             let tCmj = [...playersData].filter(p => p.cmj).sort((a,b)=>b.cmj - a.cmj).slice(0,3);
-            document.getElementById('top-cmj').innerHTML = tCmj.map(p => `<div class="flex justify-between text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-club-yellow">${p.cmj} cm</span></div>`).join('');
+            document.getElementById('top-cmj').innerHTML = tCmj.map(p => `<div class="flex justify-between text-[10px] md:text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-club-yellow">${p.cmj} cm</span></div>`).join('');
             
             let tYoYo = [...playersData].filter(p => p.y26).sort((a,b)=>b.y26 - a.y26).slice(0,3);
-            document.getElementById('top-yoyo').innerHTML = tYoYo.map(p => `<div class="flex justify-between text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-club-green">${p.y26}</span></div>`).join('');
+            document.getElementById('top-yoyo').innerHTML = tYoYo.map(p => `<div class="flex justify-between text-[10px] md:text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-club-green">${p.y26}</span></div>`).join('');
             
             let tNutri = [...playersData].filter(p => p.nutri && p.nutri.sum6).sort((a,b)=>a.nutri.sum6 - b.nutri.sum6).slice(0,3);
-            document.getElementById('top-nutri').innerHTML = tNutri.map(p => `<div class="flex justify-between text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-emerald-500">${p.nutri.sum6} mm</span></div>`).join('');
+            document.getElementById('top-nutri').innerHTML = tNutri.map(p => `<div class="flex justify-between text-[10px] md:text-xs font-bold"><span class="text-slate-300">${p.name.split(',')[0]}</span><span class="text-emerald-500">${p.nutri.sum6} mm</span></div>`).join('');
 
             document.getElementById('critical-list').innerHTML = criticos.map(p => {
                 let r = [];
                 if(p.asym_cmj && Math.abs(p.asym_cmj)>15) r.push('Asim '+p.asym_cmj+'%');
                 if(p.adip && p.adip>18) r.push('Adip '+p.adip+'%');
                 if(p.nutri && p.nutri.sum6>60) r.push('Σ6 '+p.nutri.sum6+'mm');
-                return `<div class="p-2 bg-red-500/10 border border-red-500/20 rounded text-xs font-bold text-red-400">${p.name.split(',')[0]} (${r.join(', ')})</div>`
+                return `<div class="p-2 bg-red-500/10 border border-red-500/20 rounded text-[9px] md:text-[10px] font-bold text-red-400 leading-tight">${p.name.split(',')[0]} (${r.join(', ')})</div>`
             }).join('');
 
             const pos = ["Cierre", "Ala", "Pivot", "Arquero"];
@@ -1088,7 +945,7 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             charts.iComp = new Chart(document.getElementById('chart-ind-comp'), {
                 type: 'bar',
                 data: { labels: ['Músculo %', 'Adiposidad %'], datasets: [{ label: 'Jugador', data: [p.musc, p.adip], backgroundColor: C_YELLOW, borderRadius: 4 }, { label: 'Equipo', data: [getAvg(playersData, 'musc').toFixed(1), getAvg(playersData, 'adip').toFixed(1)], backgroundColor: '#475569', borderRadius: 4 }, { label: 'Elite', data: [ELITE.musc, ELITE.adip], backgroundColor: C_GREEN, borderRadius: 4 }] },
-                options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } } }
+                options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } }, plugins:{ legend:{ labels:{ font:{size:10} } } } }
             });
 
             document.getElementById('ind-eq-yoyo').innerText = getAvg(playersData, 'y26').toFixed(1);
@@ -1096,13 +953,13 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             document.getElementById('ind-y25').innerText = p.y25 || '--';
             document.getElementById('ind-y26').innerText = p.y26 || '--';
             let elDif = document.getElementById('ind-yoyo-dif');
-            if(dif !== null) { elDif.innerText = dif > 0 ? '+'+dif : dif; elDif.className = `text-[10px] font-black ${dif >= 0 ? 'text-club-green' : 'text-red-500'}`; } else { elDif.innerText = '--'; }
+            if(dif !== null) { elDif.innerText = dif > 0 ? '+'+dif : dif; elDif.className = `text-[9px] md:text-[10px] font-black ${dif >= 0 ? 'text-club-green' : 'text-red-500'}`; } else { elDif.innerText = '--'; }
 
             if(charts.iYoYo) charts.iYoYo.destroy();
             charts.iYoYo = new Chart(document.getElementById('chart-ind-yoyo'), {
                 type: 'line',
                 data: { labels: ['2025', '2026'], datasets: [{ label: 'Jugador', data: [p.y25, p.y26], borderColor: C_GREEN, backgroundColor: C_GREEN, tension: 0.1, borderWidth: 3 }, { label: 'Elite', data: [ELITE.yoyo, ELITE.yoyo], borderColor: '#22c55e', borderDash: [2,2], pointRadius: 0 }] },
-                options: { maintainAspectRatio: false, scales:{ y:{ min: 15, grid:{color:'#1e293b'} } } }
+                options: { maintainAspectRatio: false, scales:{ y:{ min: 15, grid:{color:'#1e293b'} } }, plugins:{ legend:{ labels:{ font:{size:10} } } } }
             });
 
             document.getElementById('pot-cmj').innerText = p.cmj || '--';
@@ -1127,7 +984,7 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             charts.iPow = new Chart(document.getElementById('chart-ind-power'), {
                 type: 'bar',
                 data: { labels: ['Der', 'Izq'], datasets: [{ label: 'CMJ (cm)', data: [p.cmj_de, p.cmj_iz], backgroundColor: C_YELLOW }, { label: 'Broad (x10)', data: [p.broad_de ? p.broad_de*10 : null, p.broad_iz ? p.broad_iz*10 : null], backgroundColor: C_GREEN }] },
-                options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } } }
+                options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } }, plugins:{ legend:{ labels:{ font:{size:10} } } } }
             });
 
             document.getElementById('kin-tob').innerText = (p.kin && p.kin.t) ? p.kin.t : 'Sin reg';
@@ -1138,7 +995,7 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             let eBox = document.getElementById('ind-exercises'); eBox.innerHTML = '';
             let txt = p.kin ? (p.kin.t + p.kin.c + p.kin.u + p.kin.s).toLowerCase() : "";
             let added = false;
-            Object.keys(REHAB_LIB).forEach(k => { if(txt.includes(k)) { added = true; REHAB_LIB[k].forEach(x => { eBox.innerHTML += `<div class="flex justify-between items-center p-2 bg-slate-900 rounded border border-slate-800"><span class="text-xs font-bold text-slate-300">• ${x.t}</span><a href="${x.v}" class="text-club-green">▶️</a></div>`; }); } });
+            Object.keys(REHAB_LIB).forEach(k => { if(txt.includes(k)) { added = true; REHAB_LIB[k].forEach(x => { eBox.innerHTML += `<div class="flex justify-between items-center p-2 bg-slate-900 rounded border border-slate-800"><span class="text-[10px] md:text-xs font-bold text-slate-300">• ${x.t}</span><a href="${x.v}" class="text-club-green">▶️</a></div>`; }); } });
             if(!added) eBox.innerHTML = `<p class="text-[10px] text-slate-500 italic text-center py-4">Sin prescripción</p>`;
         }
 
@@ -1147,7 +1004,6 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             document.getElementById('player-select').value = id;
             const p = playersData.find(x => x.id === id);
             if(!p || !p.nutri) {
-                // Limpiar vista nutri si no hay datos
                 ['nutri-age','nutri-date','nutri-weight','nutri-height','nutri-sum6','nutri-sum6-dif','nutri-icc','nutri-musc-bio','nutri-adip-bio', 'per-bra-r', 'per-bra-f', 'per-cin', 'per-cad', 'per-pan', 'dia-hum', 'dia-fem', 'pl-tri', 'pl-sub', 'pl-bic', 'pl-cre', 'pl-sup', 'pl-abd', 'pl-mus', 'pl-pan'].forEach(id => {
                     const el = document.getElementById(id); if(el) el.innerText = '--';
                 });
@@ -1175,7 +1031,6 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             document.getElementById('nutri-musc-bio').innerText = p.musc ? p.musc + '%' : '--';
             document.getElementById('nutri-adip-bio').innerText = p.adip ? p.adip + '%' : '--';
 
-            // Tabla Pliegues
             const fillP = (id, val, eqAvg) => {
                 document.getElementById(id).innerText = val ? val.toFixed(1) : '--';
                 document.getElementById(id.replace('pl-', 'pl-eq-')).innerText = eqAvg ? eqAvg.toFixed(1) : '--';
@@ -1189,7 +1044,6 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             fillP('pl-mus', n.pl_mus, getAvg(playersData, 'pl_mus', true));
             fillP('pl-pan', n.pl_pan, getAvg(playersData, 'pl_pan', true));
 
-            // Tabla Perímetros y Diámetros
             document.getElementById('per-bra-r').innerText = n.per_bra_r || '--';
             document.getElementById('per-bra-f').innerText = n.per_bra_f || '--';
             document.getElementById('per-cin').innerText = n.per_cin || '--';
@@ -1198,7 +1052,6 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             document.getElementById('dia-hum').innerText = n.diam_hum || '--';
             document.getElementById('dia-fem').innerText = n.diam_fem || '--';
 
-            // Radar Pliegues
             if(charts.nPl) charts.nPl.destroy();
             charts.nPl = new Chart(document.getElementById('chart-nutri-pliegues'), {
                 type: 'radar',
@@ -1206,46 +1059,49 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                     labels: ['Tríceps', 'Subesc.', 'Bíceps', 'Cresta', 'Supra.', 'Abdom.', 'Muslo', 'Pantor.'],
                     datasets: [
                         { label: 'Jugador', data: [n.pl_tri, n.pl_sub, n.pl_bic, n.pl_cre, n.pl_sup, n.pl_abd, n.pl_mus, n.pl_pan], borderColor: C_YELLOW, backgroundColor: 'rgba(245, 158, 11, 0.2)' },
-                        { label: 'Prom. Equipo', data: [getAvg(playersData, 'pl_tri', true), getAvg(playersData, 'pl_sub', true), getAvg(playersData, 'pl_bic', true), getAvg(playersData, 'pl_cre', true), getAvg(playersData, 'pl_sup', true), getAvg(playersData, 'pl_abd', true), getAvg(playersData, 'pl_mus', true), getAvg(playersData, 'pl_pan', true)], borderColor: '#475569', fill: false, borderDash:[2,2] },
+                        { label: 'Equipo', data: [getAvg(playersData, 'pl_tri', true), getAvg(playersData, 'pl_sub', true), getAvg(playersData, 'pl_bic', true), getAvg(playersData, 'pl_cre', true), getAvg(playersData, 'pl_sup', true), getAvg(playersData, 'pl_abd', true), getAvg(playersData, 'pl_mus', true), getAvg(playersData, 'pl_pan', true)], borderColor: '#475569', fill: false, borderDash:[2,2] },
                         { label: 'Elite', data: [ELITE_NUTRI.tri, ELITE_NUTRI.sub, ELITE_NUTRI.bic, ELITE_NUTRI.cre, ELITE_NUTRI.sup, ELITE_NUTRI.abd, ELITE_NUTRI.mus, ELITE_NUTRI.pan], borderColor: C_GREEN, fill: false, borderDash:[5,5] }
                     ]
                 },
-                options: { scales:{ r:{ grid:{color:'#1e293b'}, pointLabels:{color:'#64748b'}, ticks:{display:false} } } }
+                options: { maintainAspectRatio: false, scales:{ r:{ grid:{color:'#1e293b'}, pointLabels:{color:'#cbd5e1', font:{size:9}}, ticks:{display:false} } }, plugins:{ legend:{ labels:{ font:{size:10} } } } }
             });
         }
 
-        function renderCompare() {
-            const s1 = document.getElementById('comp-1').value;
-            const s2 = document.getElementById('comp-2').value;
-            const s3 = document.getElementById('comp-3').value;
-            const s4 = document.getElementById('comp-4').value;
-            
-            if (s1) compSel[0] = parseInt(s1);
-            if (s2) compSel[1] = parseInt(s2);
-            if (s3) compSel[2] = parseInt(s3);
-            if (s4) compSel[3] = parseInt(s4);
+        function renderCompare(updateState = true) {
+            if (updateState) {
+                const s1 = document.getElementById('comp-1').value;
+                const s2 = document.getElementById('comp-2').value;
+                const s3 = document.getElementById('comp-3').value;
+                const s4 = document.getElementById('comp-4').value;
+                
+                if (s1) compSel[0] = parseInt(s1);
+                if (s2) compSel[1] = parseInt(s2);
+                if (s3) compSel[2] = parseInt(s3);
+                if (s4) compSel[3] = parseInt(s4);
+            }
 
             const p = compSel.map(id => playersData.find(x => x.id === id)).filter(Boolean);
             const cols = ['#10b981', '#f59e0b', '#3b82f6', '#8b5cf6'];
+            const labels = p.map(x => x.name.split(',')[0]);
 
             if(charts.mPow) charts.mPow.destroy();
             charts.mPow = new Chart(document.getElementById('chart-comp-power'), {
                 type: 'bar',
-                data: { labels: ['CMJ (cm)', 'Broad (x10)'], datasets: p.map((x, i) => ({ label: x.name.split(',')[0], data: [x.cmj, x.broad ? x.broad*10 : null], backgroundColor: cols[i], borderRadius: 4 })) },
-                options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } } }
+                data: { labels: ['CMJ (cm)', 'Broad (x10)'], datasets: p.map((x, i) => ({ label: labels[i], data: [x.cmj, x.broad ? x.broad*10 : null], backgroundColor: cols[i], borderRadius: 4 })) },
+                options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } }, plugins:{ legend:{ labels:{ font:{size:10} } } } }
             });
 
             if(charts.mComp) charts.mComp.destroy();
             charts.mComp = new Chart(document.getElementById('chart-comp-comp'), {
                 type: 'bar',
-                data: { labels: ['Músculo %', 'Σ6 Pliegues (mm)'], datasets: p.map((x, i) => ({ label: x.name.split(',')[0], data: [x.musc, x.nutri ? x.nutri.sum6 : null], backgroundColor: cols[i], borderRadius: 4 })) },
-                options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } } }
+                data: { labels: ['Músculo %', 'Σ6 Pliegues (mm)'], datasets: p.map((x, i) => ({ label: labels[i], data: [x.musc, x.nutri ? x.nutri.sum6 : null], backgroundColor: cols[i], borderRadius: 4 })) },
+                options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } }, plugins:{ legend:{ labels:{ font:{size:10} } } } }
             });
 
             if(charts.mYo) charts.mYo.destroy();
             charts.mYo = new Chart(document.getElementById('chart-comp-yoyo'), {
                 type: 'bar',
-                data: { labels: p.map(x => x.name.split(',')[0]), datasets: [{ label: 'Yo-Yo 2026', data: p.map(x => x.y26), backgroundColor: p.map((_, i) => cols[i]), borderRadius: 4 }] },
+                data: { labels: labels, datasets: [{ label: 'Yo-Yo 2026', data: p.map(x => x.y26), backgroundColor: p.map((_, i) => cols[i]), borderRadius: 4 }] },
                 options: { maintainAspectRatio: false, scales:{ y:{ grid:{color:'#1e293b'} } }, plugins:{legend:{display:false}} }
             });
         }
@@ -1261,7 +1117,11 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
 
             for(let i=1; i<=4; i++) {
                 const el = document.getElementById('comp-'+i); el.innerHTML = '';
-                playersData.forEach((p, idx) => { const o = new Option(p.name, p.id); if(idx === compSel[i-1]-1) o.selected = true; el.add(o); });
+                playersData.forEach(p => { 
+                    const o = new Option(p.name, p.id); 
+                    if(p.id === compSel[i-1]) o.selected = true; 
+                    el.add(o); 
+                });
             }
         }
 
@@ -1280,21 +1140,21 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             }
             
             document.getElementById('nutri-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
         }
 
         function closeNutriModal() {
             document.getElementById('nutri-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
         }
 
         function init() {
             parseNutri();
             
-            // Inyección in-memory de planes dietarios
             playersData.forEach(p => {
                 if(p.nutri && PLANES_NUTRICIONALES[p.id]) {
                     p.nutri.plan = PLANES_NUTRICIONALES[p.id];
                 } else if (!p.nutri && PLANES_NUTRICIONALES[p.id]) {
-                    // Si el jugador no tiene datos antropométricos pero sí plan
                     p.nutri = { plan: PLANES_NUTRICIONALES[p.id] };
                 }
             });
@@ -1303,7 +1163,7 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             renderIndividual();
             renderNutri();
             renderGeneral();
-            renderCompare();
+            renderCompare(false);
         }
 
         document.addEventListener("DOMContentLoaded", init);
