@@ -86,6 +86,19 @@
             </div>
         </div>
 
+        <div id="video-modal" class="hidden fixed inset-0 z-[110] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-4 transition-opacity">
+            <div class="glass-panel w-full max-w-sm p-4 relative border-purple-500/30 flex flex-col items-center">
+                <button onclick="closeVideoModal()" class="absolute top-2 right-3 text-slate-400 hover:text-white font-black text-2xl transition-colors">&times;</button>
+                <div class="w-full mb-4 border-b border-slate-800 pb-2 pr-6">
+                    <p class="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Prescripción de Ejercicio</p>
+                    <h2 id="video-modal-title" class="text-sm md:text-base font-black uppercase text-purple-400">--</h2>
+                </div>
+                <div class="w-full aspect-[9/16] bg-black rounded-lg overflow-hidden border border-slate-800 relative">
+                    <iframe id="video-iframe" class="absolute top-0 left-0 w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+
         <section id="view-individual" class="space-y-6 animate-in fade-in duration-300">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-3">
@@ -790,7 +803,7 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                 }
             });
         }
-        // REFERENCIAS IDEALES
+
         const ELITE = { musc: 48, adip: 11, visc: 4, cmj: 45, broad: 2.5, yoyo: 21.0, asym: 0, imc: 23.0, ed_met: 20, abk: 60.0 };
         const ELITE_NUTRI = { sum6: 50, tri: 6, sub: 8, bic: 4, cre: 8, sup: 6, abd: 10, mus: 10, pan: 6 };
 
@@ -999,7 +1012,7 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                 if(txt.includes(k)) { 
                     added = true; 
                     REHAB_LIB[k].forEach(x => { 
-                        eBox.innerHTML += `<div class="flex justify-between items-center p-2 bg-slate-900 rounded border border-slate-800"><a href="${x.v}" target="_blank" onclick="window.open('${x.v}', 'popup', 'width=400,height=600'); return false;" class="text-[10px] md:text-xs font-bold text-slate-300 hover:text-white transition-colors cursor-pointer flex-grow">• ${x.t}</a><a href="${x.v}" target="_blank" onclick="window.open('${x.v}', 'popup', 'width=400,height=600'); return false;" class="text-club-green hover:scale-110 transition-transform cursor-pointer">▶️</a></div>`; 
+                        eBox.innerHTML += `<div class="flex justify-between items-center p-2 bg-slate-900 rounded border border-slate-800"><button onclick="openVideoModal('${x.t}', '${x.v}')" class="text-[10px] md:text-xs font-bold text-slate-300 hover:text-white transition-colors cursor-pointer flex-grow text-left">• ${x.t}</button><button onclick="openVideoModal('${x.t}', '${x.v}')" class="text-club-green hover:scale-110 transition-transform cursor-pointer flex-shrink-0">▶️</button></div>`; 
                     }); 
                 } 
             });
@@ -1152,6 +1165,31 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
 
         function closeNutriModal() {
             document.getElementById('nutri-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function getEmbedUrl(url) {
+            let videoId = '';
+            if (url.includes('shorts/')) {
+                videoId = url.split('shorts/')[1].split('?')[0];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1].split('?')[0];
+            } else if (url.includes('youtube.com/watch?v=')) {
+                videoId = url.split('v=')[1].split('&')[0];
+            }
+            return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        }
+
+        function openVideoModal(title, url) {
+            document.getElementById('video-modal-title').innerText = title;
+            document.getElementById('video-iframe').src = getEmbedUrl(url);
+            document.getElementById('video-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeVideoModal() {
+            document.getElementById('video-modal').classList.add('hidden');
+            document.getElementById('video-iframe').src = '';
             document.body.style.overflow = 'auto';
         }
 
