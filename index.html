@@ -790,17 +790,17 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
                 }
             });
         }
-
+        // REFERENCIAS IDEALES
         const ELITE = { musc: 48, adip: 11, visc: 4, cmj: 45, broad: 2.5, yoyo: 21.0, asym: 0, imc: 23.0, ed_met: 20, abk: 60.0 };
         const ELITE_NUTRI = { sum6: 50, tri: 6, sub: 8, bic: 4, cre: 8, sup: 6, abd: 10, mus: 10, pan: 6 };
 
         const REHAB_LIB = {
-            "isquiosural": [{t: "Dead Bugs", v: "#"}, {t: "Puente glúteo unilateral", v: "#"}, {t: "Peso muerto rumano uni", v: "#"}],
-            "movilidad": [{t: "Dorsiflexión c/ banda", v: "#"}, {t: "Obelisco", v: "#"}, {t: "Movilidad Toráxica", v: "#"}],
-            "tobillo": [{t: "Mov. Articular Rodilla/Tobillo", v: "#"}, {t: "Salto Alternado", v: "#"}, {t: "Dorsiflexión c/ carga", v: "#"}],
-            "pelvica": [{t: "Bird-dog", v: "#"}, {t: "Puente almeja c/ banda", v: "#"}, {t: "Isométricos glúteo medio", v: "#"}],
-            "cadera": [{t: "90-90 Rotación interna", v: "#"}, {t: "Ranita", v: "#"}, {t: "Curl Nórdico invertido", v: "#"}],
-            "escapular": [{t: "Movilidad Escapular", v: "#"}, {t: "Halo Split KB", v: "#"}, {t: "Pájaros con poleas", v: "#"}]
+            "isquiosural": [{t: "Dead Bugs", v: "https://youtube.com/shorts/vn72PVWnu14?si=C9T2vir-Y8jEgnaq"}, {t: "Puente glúteo unilateral", v: "https://youtube.com/shorts/Y-N53Q6XxiI?si=Sk3iLRYCAQVPlD2Z"}, {t: "Peso muerto rumano uni", v: "https://youtu.be/YXjc7TURwfE?si=o36r4eyuHhHHya2D"}],
+            "movilidad": [{t: "Dorsiflexión c/ banda", v: "https://youtube.com/shorts/Re7XMKgAti8?si=mNm9ZWNQYnsRpOUO"}, {t: "Obelisco", v: "https://youtube.com/shorts/dWLrnRwY41c?si=qSBKdIW4-a8_YsL-"}, {t: "Movilidad Toráxica", v: "https://youtube.com/shorts/2et2ZXUk6co?si=FnRuSPQI139KEDzA"}],
+            "tobillo": [{t: "Mov. Articular Rodilla/Tobillo", v: "https://youtube.com/shorts/dYS9cgYk2lY?si=-piVl3JfK_dp0DWn"}, {t: "Salto Alternado", v: "https://youtube.com/shorts/b5qmCWB8cpo?si=j1bZM645_6gVmSGv"}, {t: "Dorsiflexión c/ carga", v: "https://youtube.com/shorts/tXVq7MAOAVY?si=VU33wQ1dUapayBd_"}],
+            "pelvica": [{t: "Bird-dog", v: "https://youtube.com/shorts/Tjo5oYHoS8M?si=GBghefTkKhePUDmt"}, {t: "Puente almeja c/ banda", v: "https://youtube.com/shorts/9vWRjF08xiQ?feature=shared"}, {t: "Isométricos glúteo medio", v: "https://youtube.com/shorts/oxouNCjxHWw?si=Vn2rU2hhv9rL3XA2"}],
+            "cadera": [{t: "90-90 Rotación interna", v: "https://youtube.com/shorts/p2NUakSyUcE?si=N_8SVkOBYFFqFxWp"}, {t: "Ranita", v: "https://youtube.com/shorts/cvgsb7xCgN4?si=5Wx1vtE2clpfyODa"}, {t: "Curl Nórdico invertido", v: "https://youtube.com/shorts/UZf6CbQR8_s?si=2ow191xDGdTTwZdQ"}],
+            "escapular": [{t: "Movilidad Escapular", v: "https://youtube.com/shorts/5j4inxyq-MA?si=TfzdpSnAjLYWkqnZ"}, {t: "Halo Split KB", v: "https://youtube.com/shorts/UARPXzqDNhM?si=j8Ug-37tK0ka8g2v"}, {t: "Pájaros con poleas", v: "https://youtu.be/ki6gkb_mJr0?si=hDASv1MqaavNI3_O"}]
         };
 
         const C_GREEN = '#10b981'; const C_YELLOW = '#f59e0b'; const C_RED = '#ef4444';
@@ -995,7 +995,14 @@ Stanizzi, Bautista;126,2;2/13/2026;1;64,900;171,000;;;26,100;28,500;;;36,200;6,0
             let eBox = document.getElementById('ind-exercises'); eBox.innerHTML = '';
             let txt = p.kin ? (p.kin.t + p.kin.c + p.kin.u + p.kin.s).toLowerCase() : "";
             let added = false;
-            Object.keys(REHAB_LIB).forEach(k => { if(txt.includes(k)) { added = true; REHAB_LIB[k].forEach(x => { eBox.innerHTML += `<div class="flex justify-between items-center p-2 bg-slate-900 rounded border border-slate-800"><span class="text-[10px] md:text-xs font-bold text-slate-300">• ${x.t}</span><a href="${x.v}" class="text-club-green">▶️</a></div>`; }); } });
+            Object.keys(REHAB_LIB).forEach(k => { 
+                if(txt.includes(k)) { 
+                    added = true; 
+                    REHAB_LIB[k].forEach(x => { 
+                        eBox.innerHTML += `<div class="flex justify-between items-center p-2 bg-slate-900 rounded border border-slate-800"><a href="${x.v}" target="_blank" onclick="window.open('${x.v}', 'popup', 'width=400,height=600'); return false;" class="text-[10px] md:text-xs font-bold text-slate-300 hover:text-white transition-colors cursor-pointer flex-grow">• ${x.t}</a><a href="${x.v}" target="_blank" onclick="window.open('${x.v}', 'popup', 'width=400,height=600'); return false;" class="text-club-green hover:scale-110 transition-transform cursor-pointer">▶️</a></div>`; 
+                    }); 
+                } 
+            });
             if(!added) eBox.innerHTML = `<p class="text-[10px] text-slate-500 italic text-center py-4">Sin prescripción</p>`;
         }
 
